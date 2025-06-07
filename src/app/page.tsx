@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#FFF8F0] p-6 font-sans">
       <img
-        src="/logo2.png" // 퍼블릭 디렉토리에 넣은 이미지 경로
+        src="/yuru.png" // 퍼블릭 디렉토리에 넣은 이미지 경로
         alt="유루빵 이미지"
         className="w-64 h-64 rounded-3xl"
       />

@@ -61,8 +61,8 @@ interface PlanDetailResponse {
   name: string;
   memo: string;
   isComplete: boolean;
-  recipeDetails: any[];
-  lackIngredients: any[];
+  recipeDetails: ApiRecipeDetail[];
+  lackIngredients: Ingredient[];
 }
 
 interface RecipeSearchItem {
@@ -79,6 +79,33 @@ interface RecipeSearchResponse {
     pageSize: number;
   };
   totalPages: number;
+}
+
+interface ApiRecipeDetail {
+  recipeId: number;
+  recipeName: string;
+  recipeDescription: string;
+  totalPrice: number;
+  customRecipeName: string;
+  customRecipeDescription: string;
+  outputQuantity: number;
+  goalQuantity: number | string;
+  percent: number;
+  comparedParts: ApiComparedPart[];
+}
+
+interface ApiComparedPart {
+  partName: string;
+  percent: number;
+  comparedIngredients: ApiComparedIngredient[];
+}
+
+interface ApiComparedIngredient {
+  ingredientId: number;
+  ingredientName: string;
+  unit: string;
+  originalQuantity: number;
+  customizedQuantity: number | string;
 }
 
 export default function PlanDetailPage() {
@@ -153,7 +180,7 @@ export default function PlanDetailPage() {
         name: d.name,
         memo: d.memo,
         isComplete: d.isComplete,
-        recipeDetails: d.recipeDetails.map((r: any) => ({
+        recipeDetails: d.recipeDetails.map((r: ApiRecipeDetail) => ({
           recipeId: r.recipeId,
           name: r.recipeName,
           description: r.recipeDescription,
@@ -163,19 +190,21 @@ export default function PlanDetailPage() {
           outputQuantity: r.outputQuantity,
           goalQuantity: r.goalQuantity,
           percent: r.percent,
-          comparedParts: r.comparedParts.map((p: any) => ({
+          comparedParts: r.comparedParts.map((p: ApiComparedPart) => ({
             partName: p.partName,
             percent: p.percent,
-            comparedIngredients: p.comparedIngredients.map((ing: any) => ({
-              ingredientId: ing.ingredientId,
-              ingredientName: ing.ingredientName,
-              unit: ing.unit,
-              originalQuantity: ing.originalQuantity,
-              customizedQuantity: ing.customizedQuantity,
-            })),
+            comparedIngredients: p.comparedIngredients.map(
+              (ing: ApiComparedIngredient) => ({
+                ingredientId: ing.ingredientId,
+                ingredientName: ing.ingredientName,
+                unit: ing.unit,
+                originalQuantity: ing.originalQuantity,
+                customizedQuantity: ing.customizedQuantity,
+              })
+            ),
           })),
         })),
-        lackIngredients: d.lackIngredients.map((item: any) => ({
+        lackIngredients: d.lackIngredients.map((item: Ingredient) => ({
           ingredientId: item.ingredientId,
           name: item.name,
           requiredQuantity: item.requiredQuantity,
@@ -183,6 +212,7 @@ export default function PlanDetailPage() {
           lackingQuantity: item.lackingQuantity,
         })),
       };
+
       setPlan(converted);
     } catch (err) {
       toast.error((err as Error).message);
@@ -192,6 +222,7 @@ export default function PlanDetailPage() {
   };
 
   // 컴포넌트 마운트 시 플랜 상세 조회
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchPlanDetail();
   }, [planId]);
@@ -337,11 +368,8 @@ export default function PlanDetailPage() {
     if (!editingRecipe) return;
     const parts = [...editingRecipe.comparedParts];
     const ing = parts[partIndex].comparedIngredients[ingIndex];
-    if (field === "customizedQuantity") {
-      ing.customizedQuantity = value;
-    } else {
-      (ing as any)[field] = value;
-    }
+    ing[field] = value;
+
     setEditingRecipe({ ...editingRecipe, comparedParts: parts });
   };
 
@@ -471,7 +499,7 @@ export default function PlanDetailPage() {
       const res = await fetch(`http://localhost:8080/api/plans/${planId}`, {
         method: "DELETE",
       });
-      const data: ApiResponse<any> = await res.json();
+      const data: ApiResponse<string> = await res.json();
       if (data.resultCode === "OK") {
         toast.success("생산 계획이 삭제되었습니다.");
         router.push("/plans");

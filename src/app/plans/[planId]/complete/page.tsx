@@ -14,12 +14,20 @@ interface RecipeDetail {
   isTemp: boolean;
 }
 
+interface Ingredient {
+  ingredientId: number;
+  name: string;
+  requiredQuantity: number;
+  currentStock: number;
+  lackingQuantity: number;
+}
+
 // API에서 받아오는 PlanDetailResponse 타입 정의
 interface PlanDetailResponse {
   memo: string;
   isComplete: boolean;
   recipeDetails: RecipeDetail[];
-  lackIngredients: any[]; // 여기서는 사용하지 않으므로 any[]로 둠
+  lackIngredients: Ingredient[];
 }
 
 export default function PlanCompletePage() {

@@ -160,8 +160,12 @@ export default function RecipeForm() {
       setSelectedCategoryId(created.categoryId);
       setNewCategoryName("");
       setShowCategoryModal(false);
-    } catch (error: any) {
-      alert(error.message || "카테고리 생성 중 오류가 발생했습니다.");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert(error.message || "카테고리 생성 중 오류가 발생했습니다.");
+      } else {
+        alert("카테고리 생성 중 알 수 없는 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -241,7 +245,7 @@ export default function RecipeForm() {
       } else {
         throw new Error("레시피 ID를 받아오지 못했습니다.");
       }
-    } catch (err) {
+    } catch {
       alert("등록 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);

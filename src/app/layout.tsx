@@ -1,21 +1,7 @@
-import "./globals.css";
-import localFont from "next/font/local";
-import { Toaster } from "sonner";
+// src/app/layout.tsx (또는 RootLayout.tsx)
 
-const suit = localFont({
-  src: [
-    {
-      path: "/fonts/SUIT-Regular.ttf",
-      weight: "400",
-    },
-    {
-      path: "/fonts/SUIT-Bold.ttf",
-      weight: "700",
-    },
-  ],
-  variable: "--font-suit",
-  display: "swap",
-});
+import "./globals.css";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -23,9 +9,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" className={`${suit.variable} font-sans`}>
+    <html lang="ko" className="font-sans">
       <body>
-        {children} <Toaster richColors position="top-right" />
+        {children}
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

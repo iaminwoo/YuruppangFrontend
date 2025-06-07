@@ -120,7 +120,6 @@ export default function PlanDetailPage() {
   const [selectedRecipeIndex, setSelectedRecipeIndex] = useState(0);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [newGoalQuantity, setNewGoalQuantity] = useState<string | number>("");
-  const [isFetchingPlan, setIsFetchingPlan] = useState(false);
 
   // ──────────────────────────────────────────────────────────────────────────────
   // ‘레시피 추가’ 모달 관련 상태
@@ -167,7 +166,6 @@ export default function PlanDetailPage() {
   // ──────────────────────────────────────────────────────────────────────────────
   const fetchPlanDetail = async () => {
     if (!planId) return;
-    setIsFetchingPlan(true);
     try {
       const res = await fetch(`http://localhost:8080/api/plans/${planId}`);
       if (!res.ok) throw new Error(`플랜 상세 조회 실패: ${res.status}`);
@@ -216,8 +214,6 @@ export default function PlanDetailPage() {
       setPlan(converted);
     } catch (err) {
       toast.error((err as Error).message);
-    } finally {
-      setIsFetchingPlan(false);
     }
   };
 
@@ -456,7 +452,7 @@ export default function PlanDetailPage() {
       }
       toast.success("기본 레시피로 초기화되었습니다.");
       fetchPlanDetail();
-    } catch (error) {
+    } catch {
       toast.error("네트워크 오류");
     }
   };
@@ -1085,7 +1081,7 @@ export default function PlanDetailPage() {
               onClick={() => {
                 setShowScaleModal(false);
                 setDebounceTimer((prev) => {
-                  prev && clearTimeout(prev);
+                  if (prev) clearTimeout(prev);
                   return null;
                 });
               }}

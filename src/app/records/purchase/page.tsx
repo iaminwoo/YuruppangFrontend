@@ -24,7 +24,6 @@ export default function PurchasePage() {
   // 현재 열려 있는지 여부
   const [showIngredientModal, setShowIngredientModal] = useState(false);
   // 모달을 연 재료가 속한 partIndex, ingredientIndex
-  const [currentPartIndex, setCurrentPartIndex] = useState<number | null>(null);
   const [currentIngredientIndex, setCurrentIngredientIndex] = useState<
     number | null
   >(null);

@@ -8,7 +8,7 @@ import IngredientSearchModal from "@/components/IngredientSearchModal";
 
 interface Ingredient {
   ingredientName: string;
-  quantity: number | string;
+  requiredQuantity: number | string;
   unit: string;
 }
 
@@ -48,7 +48,7 @@ export default function RecipeEditPage() {
   const [parts, setParts] = useState<Part[]>([
     {
       partName: "",
-      ingredients: [{ ingredientName: "", quantity: "", unit: "G" }],
+      ingredients: [{ ingredientName: "", requiredQuantity: "", unit: "G" }],
     },
   ]);
   const [loading, setLoading] = useState(false);
@@ -91,14 +91,12 @@ export default function RecipeEditPage() {
 
           if (r.parts && Array.isArray(r.parts) && r.parts.length > 0) {
             setParts(
-              r.parts.map((part: any) => ({
+              r.parts.map((part: Part) => ({
                 partName: part.partName || "",
-                ingredients: part.ingredients.map((ing: any) => ({
+                ingredients: part.ingredients.map((ing: Ingredient) => ({
                   ingredientName: ing.ingredientName || "",
-                  quantity:
-                    ing.quantity ||
-                    ing.requiredQuantity ||
-                    "" /* 서버 필드 반영 */,
+                  requiredQuantity:
+                    ing.requiredQuantity || "" /* 서버 필드 반영 */,
                   unit: ing.unit || "G",
                 })),
               }))
@@ -107,7 +105,9 @@ export default function RecipeEditPage() {
             setParts([
               {
                 partName: "",
-                ingredients: [{ ingredientName: "", quantity: "", unit: "G" }],
+                ingredients: [
+                  { ingredientName: "", requiredQuantity: "", unit: "G" },
+                ],
               },
             ]);
           }
@@ -162,7 +162,7 @@ export default function RecipeEditPage() {
     const newParts = [...parts];
     newParts[partIndex].ingredients.push({
       ingredientName: "",
-      quantity: "",
+      requiredQuantity: "",
       unit: "G",
     });
     setParts(newParts);
@@ -182,7 +182,7 @@ export default function RecipeEditPage() {
       ...parts,
       {
         partName: "",
-        ingredients: [{ ingredientName: "", quantity: "", unit: "G" }],
+        ingredients: [{ ingredientName: "", requiredQuantity: "", unit: "G" }],
       },
     ]);
   };
@@ -196,7 +196,9 @@ export default function RecipeEditPage() {
         : [
             {
               partName: "",
-              ingredients: [{ ingredientName: "", quantity: "", unit: "G" }],
+              ingredients: [
+                { ingredientName: "", requiredQuantity: "", unit: "G" },
+              ],
             },
           ]
     );
@@ -225,8 +227,12 @@ export default function RecipeEditPage() {
       setSelectedCategoryId(created.categoryId.toString());
       setNewCategoryName("");
       setShowCategoryModal(false);
-    } catch (error: any) {
-      alert(error.message || "카테고리 생성 중 오류가 발생했습니다.");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert(error.message || "카테고리 생성 중 오류가 발생했습니다.");
+      } else {
+        alert("카테고리 생성 중 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -253,14 +259,14 @@ export default function RecipeEditPage() {
           .filter(
             (ing) =>
               ing.ingredientName.trim() &&
-              ing.quantity !== "" &&
-              ing.quantity !== null &&
-              !isNaN(Number(ing.quantity)) &&
+              ing.requiredQuantity !== "" &&
+              ing.requiredQuantity !== null &&
+              !isNaN(Number(ing.requiredQuantity)) &&
               ing.unit
           )
           .map((ing) => ({
             ingredientName: ing.ingredientName.trim(),
-            quantity: parseFloat(String(ing.quantity)),
+            requiredQuantity: parseFloat(String(ing.requiredQuantity)),
             unit: ing.unit,
           })),
       }));
@@ -289,8 +295,12 @@ export default function RecipeEditPage() {
 
       alert("레시피가 수정되었습니다.");
       router.push(`/recipes/${recipeId}`);
-    } catch (err: any) {
-      setError(err.message || "오류가 발생했습니다.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "오류가 발생했습니다.");
+      } else {
+        setError("오류가 발생했습니다.");
+      }
     } finally {
       setLoading(false);
     }
@@ -473,12 +483,12 @@ export default function RecipeEditPage() {
                       type="number"
                       min={0}
                       placeholder="수량"
-                      value={ingredient.quantity}
+                      value={ingredient.requiredQuantity}
                       onChange={(e) =>
                         handlePartIngredientChange(
                           partIndex,
                           ingredientIndex,
-                          "quantity",
+                          "requiredQuantity",
                           e.target.value
                         )
                       }

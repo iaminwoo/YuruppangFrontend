@@ -121,8 +121,12 @@ export default function UsagePage() {
 
       alert("소비 기록이 완료되었습니다.");
       router.push("/stock");
-    } catch (err: any) {
-      setError(err.message || "오류가 발생했습니다.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("오류가 발생했습니다.");
+      }
     } finally {
       setLoading(false);
     }

@@ -9,6 +9,11 @@ interface Category {
   categoryName: string;
 }
 
+interface Recipe {
+  recipeId: number;
+  // recipe에 필요한 다른 필드가 있으면 여기에 추가
+}
+
 export default function CategoryManagementPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -85,22 +90,6 @@ export default function CategoryManagementPage() {
       });
   };
 
-  const handleDelete = (id: number) => {
-    if (!confirm("정말 삭제할까요?")) return;
-
-    fetch(`http://localhost:8080/api/categories/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.resultCode === "OK") {
-          fetchCategories();
-        } else {
-          alert("삭제 실패: " + data.msg);
-        }
-      });
-  };
-
   const handleDeleteClick = async (category: Category) => {
     // 카테고리 내 레시피 목록을 가져오는 API 호출
     const res = await fetch(
@@ -113,7 +102,7 @@ export default function CategoryManagementPage() {
       setRecipesInCategory(data.data); // [{recipeId, recipeName}]
       // 초기값 설정
       setRecipeReassignments(
-        data.data.map((recipe: any) => ({
+        data.data.map((recipe: Recipe) => ({
           recipeId: recipe.recipeId,
           newCategoryId: 0, // 사용자가 선택해야 함
         }))
@@ -246,7 +235,7 @@ export default function CategoryManagementPage() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-sm sm:max-w-lg space-y-4 shadow-lg">
             <h2 className="text-lg font-semibold">
-              '{categoryToDelete.categoryName}' 카테고리 삭제
+              카테고리 삭제 : {categoryToDelete.categoryName}
             </h2>
             {recipesInCategory.length > 0 && (
               <p className="text-sm text-gray-600">

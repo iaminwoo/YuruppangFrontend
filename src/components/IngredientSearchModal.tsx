@@ -13,6 +13,10 @@ interface IngredientSearchModalProps {
   initialKeyword?: string;
 }
 
+interface Ingredient {
+  ingredientName: string;
+}
+
 export default function IngredientSearchModal({
   isOpen,
   onClose,
@@ -53,7 +57,7 @@ export default function IngredientSearchModal({
         if (!res.ok) throw new Error(`검색 실패: ${res.status}`);
         const json = await res.json();
         const list: { name: string }[] = (json.data?.ingredients || []).map(
-          (ing: any) => ({ name: ing.ingredientName })
+          (ing: Ingredient) => ({ name: ing.ingredientName })
         );
         setSearchResults(list);
       } catch (err) {

@@ -70,8 +70,12 @@ export default function StockPage() {
       } else {
         setError(reloadData.msg || "알 수 없는 오류");
       }
-    } catch (e: any) {
-      alert("에러: " + e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        alert("에러: " + e.message);
+      } else {
+        alert("알 수 없는 에러가 발생했습니다.");
+      }
     } finally {
       setLoading(false);
     }

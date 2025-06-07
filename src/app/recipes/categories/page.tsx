@@ -157,7 +157,7 @@ export default function CategoryManagementPage() {
             placeholder="새 카테고리 이름"
             value={newCategoryName}
             onChange={(e) => setNewCategoryName(e.target.value)}
-            className="flex-1 px-3 py-2 border rounded-md"
+            className="flex-1 min-w-0 px-3 py-2 border rounded-md"
           />
           <Button
             onClick={handleAddCategory}

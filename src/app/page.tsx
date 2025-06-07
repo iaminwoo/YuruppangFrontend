@@ -1,19 +1,16 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 export default function Home() {
   const router = useRouter();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#FFF8F0] p-6 font-sans">
-      <Image
-        src="/logo2.png" // public 폴더 기준 경로
+      <img
+        src="/logo2.png" // 퍼블릭 디렉토리에 넣은 이미지 경로
         alt="유루빵 이미지"
-        width={256} // w-64 (64 * 4) = 256px
-        height={256} // h-64 = 256px
-        className="rounded-3xl"
+        className="w-64 h-64 rounded-3xl"
       />
 
       <h1 className="text-4xl md:text-5xl font-bold mb-4 mt-10 text-[#4E342E] text-center">

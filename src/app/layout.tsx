@@ -5,11 +5,11 @@ import { Toaster } from "sonner";
 const suit = localFont({
   src: [
     {
-      path: "../fonts/SUIT-Regular.ttf",
+      path: "/fonts/SUIT-Regular.ttf",
       weight: "400",
     },
     {
-      path: "../fonts/SUIT-Bold.ttf",
+      path: "/fonts/SUIT-Bold.ttf",
       weight: "700",
     },
   ],

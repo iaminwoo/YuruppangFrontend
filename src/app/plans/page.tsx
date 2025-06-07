@@ -33,12 +33,13 @@ export default function YuruppangPlanListPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const fetchPlans = (pageNumber: number) => {
     setLoading(true);
     setError(null);
 
-    fetch(`http://localhost:8080/api/plans?page=${pageNumber}`)
+    fetch(`${apiUrl}/api/plans?page=${pageNumber}`)
       .then((res) => {
         if (!res.ok) throw new Error("네트워크 오류");
         return res.json();

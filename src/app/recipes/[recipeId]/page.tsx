@@ -33,6 +33,7 @@ interface ApiResponse {
 }
 
 export default function RecipeDetailPage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const params = useParams();
   const router = useRouter();
   const recipeId = params.recipeId as string;
@@ -48,7 +49,7 @@ export default function RecipeDetailPage() {
     setLoading(true);
     setError(null);
 
-    fetch(`http://localhost:8080/api/recipes/${recipeId}`)
+    fetch(`${apiUrl}/api/recipes/${recipeId}`)
       .then((res) => {
         if (!res.ok) throw new Error("네트워크 오류");
         return res.json();
@@ -69,7 +70,7 @@ export default function RecipeDetailPage() {
 
     setDeleting(true);
     try {
-      const res = await fetch(`http://localhost:8080/api/recipes/${recipeId}`, {
+      const res = await fetch(`${apiUrl}/api/recipes/${recipeId}`, {
         method: "DELETE",
       });
 

@@ -111,6 +111,7 @@ interface ApiComparedIngredient {
 export default function PlanDetailPage() {
   const { planId } = useParams();
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   // ──────────────────────────────────────────────────────────────────────────────
   // 플랜 전체 상태
@@ -167,7 +168,7 @@ export default function PlanDetailPage() {
   const fetchPlanDetail = async () => {
     if (!planId) return;
     try {
-      const res = await fetch(`http://localhost:8080/api/plans/${planId}`);
+      const res = await fetch(`${apiUrl}/api/plans/${planId}`);
       if (!res.ok) throw new Error(`플랜 상세 조회 실패: ${res.status}`);
       const json: ApiResponse<PlanDetailResponse> = await res.json();
       if (json.resultCode !== "OK") {
@@ -244,7 +245,7 @@ export default function PlanDetailPage() {
     setSearchError(null);
     try {
       // 페이지는 0, 사이즈는 10으로 제한. sortBy=name으로 이름순 정렬
-      const url = `http://localhost:8080/api/recipes?page=0&size=10&sortBy=name&keyword=${encodeURIComponent(
+      const url = `${apiUrl}/api/recipes?page=0&size=10&sortBy=name&keyword=${encodeURIComponent(
         searchKeyword.trim()
       )}`;
       const res = await fetch(url);
@@ -267,14 +268,11 @@ export default function PlanDetailPage() {
   const handleAddRecipeInModal = async (recipeIdToAdd: number) => {
     if (!planId) return;
     try {
-      const res = await fetch(
-        `http://localhost:8080/api/plans/${planId}/recipes`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ recipeId: recipeIdToAdd }),
-        }
-      );
+      const res = await fetch(`${apiUrl}/api/plans/${planId}/recipes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipeId: recipeIdToAdd }),
+      });
       if (!res.ok) throw new Error(`레시피 추가 요청 실패: ${res.status}`);
       const json: ApiResponse<PlanDetailResponse> = await res.json();
       if (json.resultCode !== "OK") {
@@ -304,7 +302,7 @@ export default function PlanDetailPage() {
 
     try {
       const res = await fetch(
-        `http://localhost:8080/api/plans/${planId}/recipes/${editingRecipe.recipeId}`,
+        `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}`,
         { method: "DELETE" }
       );
       if (!res.ok) throw new Error(`레시피 제외 요청 실패: ${res.status}`);
@@ -332,7 +330,7 @@ export default function PlanDetailPage() {
     }
     try {
       const res = await fetch(
-        `http://localhost:8080/api/plans/${planId}/recipes/${editingRecipe.recipeId}/output`,
+        `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/output`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -405,7 +403,7 @@ export default function PlanDetailPage() {
     }
     try {
       const res = await fetch(
-        `http://localhost:8080/api/plans/${planId}/recipes/${editingRecipe.recipeId}/ingredients`,
+        `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/ingredients`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -442,7 +440,7 @@ export default function PlanDetailPage() {
     if (!ok) return;
     try {
       const res = await fetch(
-        `http://localhost:8080/api/plans/${planId}/recipes/${editingRecipe.recipeId}/reset`,
+        `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/reset`,
         { method: "PATCH" }
       );
       if (!res.ok) throw new Error(`초기화 실패: ${res.status}`);
@@ -463,14 +461,11 @@ export default function PlanDetailPage() {
   const handleMemoSubmit = async () => {
     if (!plan) return;
     try {
-      const res = await fetch(
-        `http://localhost:8080/api/plans/${planId}/memo`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ newMemo: memo }),
-        }
-      );
+      const res = await fetch(`${apiUrl}/api/plans/${planId}/memo`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newMemo: memo }),
+      });
       if (!res.ok) throw new Error(`메모 저장 실패: ${res.status}`);
       const json: ApiResponse<PlanDetailResponse> = await res.json();
       if (json.resultCode !== "OK") {
@@ -492,7 +487,7 @@ export default function PlanDetailPage() {
     );
     if (!confirmed) return;
     try {
-      const res = await fetch(`http://localhost:8080/api/plans/${planId}`, {
+      const res = await fetch(`${apiUrl}/api/plans/${planId}`, {
         method: "DELETE",
       });
       const data: ApiResponse<string> = await res.json();
@@ -1127,7 +1122,7 @@ export default function PlanDetailPage() {
                   }
                   try {
                     const res = await fetch(
-                      `http://localhost:8080/api/plans/${planId}/recipes/${editingRecipe.recipeId}/output/percent`,
+                      `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/output/percent`,
                       {
                         method: "PATCH",
                         headers: { "Content-Type": "application/json" },
@@ -1197,7 +1192,7 @@ export default function PlanDetailPage() {
                       })
                     );
                     const res = await fetch(
-                      `http://localhost:8080/api/plans/${planId}/recipes/${editingRecipe.recipeId}/ingredients/percent`,
+                      `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/ingredients/percent`,
                       {
                         method: "PATCH",
                         headers: { "Content-Type": "application/json" },

@@ -19,6 +19,7 @@ interface RecordDetail {
 }
 
 export default function RecordDetailPage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { id } = useParams();
   const router = useRouter();
   const [record, setRecord] = useState<RecordDetail | null>(null);
@@ -28,7 +29,7 @@ export default function RecordDetailPage() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`http://localhost:8080/api/ingredientLogs/${id}`)
+    fetch(`${apiUrl}/api/ingredientLogs/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("네트워크 오류");
         return res.json();
@@ -101,7 +102,7 @@ export default function RecordDetailPage() {
 
               try {
                 const res = await fetch(
-                  `http://localhost:8080/api/ingredientLogs/${record.id}`,
+                  `${apiUrl}/api/ingredientLogs/${record.id}`,
                   {
                     method: "DELETE",
                   }

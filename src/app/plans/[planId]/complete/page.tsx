@@ -31,6 +31,7 @@ interface PlanDetailResponse {
 }
 
 export default function PlanCompletePage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { planId } = useParams();
   const router = useRouter();
   const [tempRecipes, setTempRecipes] = useState<RecipeDetail[]>([]);
@@ -45,7 +46,7 @@ export default function PlanCompletePage() {
   useEffect(() => {
     if (!planId) return;
     setLoading(true);
-    fetch(`http://localhost:8080/api/plans/${planId}`)
+    fetch(`${apiUrl}/api/plans/${planId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.resultCode === "OK") {
@@ -128,7 +129,7 @@ export default function PlanCompletePage() {
     });
     setSubmitting(true);
     try {
-      const res = await fetch(`http://localhost:8080/api/plans/${planId}`, {
+      const res = await fetch(`${apiUrl}/api/plans/${planId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipes: recipeDtos }),

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
 
 export default function RecordEditPage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { id } = useParams();
   const router = useRouter();
 
@@ -36,7 +37,7 @@ export default function RecordEditPage() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`http://localhost:8080/api/ingredientLogs/${id}`)
+    fetch(`${apiUrl}/api/ingredientLogs/${id}`)
       .then((res) => res.json())
       .then((data) => {
         const d = data.data;
@@ -70,16 +71,13 @@ export default function RecordEditPage() {
           ? basePayload
           : { ...basePayload, price: form.price };
 
-      const res = await fetch(
-        `http://localhost:8080/api/ingredientLogs/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch(`${apiUrl}/api/ingredientLogs/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       if (!res.ok) throw new Error("수정 실패");
 

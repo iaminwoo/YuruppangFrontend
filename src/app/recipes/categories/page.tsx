@@ -15,6 +15,7 @@ interface Recipe {
 }
 
 export default function CategoryManagementPage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -30,7 +31,7 @@ export default function CategoryManagementPage() {
   >([]);
 
   const fetchCategories = () => {
-    fetch("http://localhost:8080/api/categories")
+    fetch(`${apiUrl}/api/categories`)
       .then((res) => res.json())
       .then((data) => {
         if (data.resultCode === "OK") {
@@ -47,14 +48,11 @@ export default function CategoryManagementPage() {
   const handleEditSave = () => {
     if (!editedName.trim() || !editingCategory) return;
 
-    fetch(
-      `http://localhost:8080/api/categories/${editingCategory.categoryId}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: editedName }),
-      }
-    )
+    fetch(`${apiUrl}/api/categories/${editingCategory.categoryId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editedName }),
+    })
       .then((res) => res.json())
       .then((data) => {
         if (data.resultCode === "OK") {
@@ -74,7 +72,7 @@ export default function CategoryManagementPage() {
   const handleAddCategory = () => {
     if (!newCategoryName.trim()) return;
 
-    fetch("http://localhost:8080/api/categories", {
+    fetch(`${apiUrl}/api/categories`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newCategoryName }),
@@ -93,7 +91,7 @@ export default function CategoryManagementPage() {
   const handleDeleteClick = async (category: Category) => {
     // 카테고리 내 레시피 목록을 가져오는 API 호출
     const res = await fetch(
-      `http://localhost:8080/api/categories/${category.categoryId}/recipes`
+      `${apiUrl}/api/categories/${category.categoryId}/recipes`
     );
     const data = await res.json();
 
@@ -127,14 +125,11 @@ export default function CategoryManagementPage() {
       return;
     }
 
-    fetch(
-      `http://localhost:8080/api/categories/${categoryToDelete?.categoryId}`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ recipes: recipeReassignments }),
-      }
-    )
+    fetch(`${apiUrl}/api/categories/${categoryToDelete?.categoryId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recipes: recipeReassignments }),
+    })
       .then((res) => res.json())
       .then((data) => {
         if (data.resultCode === "OK") {

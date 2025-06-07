@@ -26,6 +26,7 @@ export default function IngredientSearchModal({
   // ──────────────────────────────────────────────────
   // 1) State 선언
   // ──────────────────────────────────────────────────
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [keyword, setKeyword] = useState(initialKeyword);
   const [searchResults, setSearchResults] = useState<{ name: string }[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -50,7 +51,7 @@ export default function IngredientSearchModal({
     const timer = setTimeout(async () => {
       try {
         const res = await fetch(
-          `http://localhost:8080/api/ingredients?keyword=${encodeURIComponent(
+          `${apiUrl}/api/ingredients?keyword=${encodeURIComponent(
             keyword.trim()
           )}`
         );

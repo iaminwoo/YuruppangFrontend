@@ -22,13 +22,14 @@ interface ApiResponse {
 }
 
 export default function StockPage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/ingredients")
+    fetch(`${apiUrl}/api/ingredients`)
       .then((res) => {
         if (!res.ok) throw new Error("재고 데이터를 불러오지 못했습니다.");
         return res.json();
@@ -49,7 +50,7 @@ export default function StockPage() {
     if (!confirm("사용되지 않는 재료를 정리하시겠습니까?")) return;
 
     try {
-      const res = await fetch("http://localhost:8080/api/ingredients", {
+      const res = await fetch(`${apiUrl}/api/ingredients`, {
         method: "DELETE",
       });
 
@@ -62,7 +63,7 @@ export default function StockPage() {
       setLoading(true);
       setError(null);
 
-      const reloadRes = await fetch("http://localhost:8080/api/ingredients");
+      const reloadRes = await fetch(`${apiUrl}/api/ingredients`);
       const reloadData: ApiResponse = await reloadRes.json();
 
       if (reloadData.resultCode === "OK") {

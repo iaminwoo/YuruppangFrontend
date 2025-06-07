@@ -31,6 +31,7 @@ interface ApiResponse {
 }
 
 export default function RecordsPage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
   const [records, setRecords] = useState<RecordItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +43,7 @@ export default function RecordsPage() {
     setLoading(true);
     setError(null);
 
-    fetch(`http://localhost:8080/api/ingredientLogs?page=${pageNumber}`)
+    fetch(`${apiUrl}/api/ingredientLogs?page=${pageNumber}`)
       .then((res) => {
         if (!res.ok) throw new Error("네트워크 응답 오류");
         return res.json();

@@ -38,6 +38,7 @@ interface Category {
 }
 
 export default function RecipeEditPage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
   const params = useParams();
   const recipeId = params.recipeId as string;
@@ -76,7 +77,7 @@ export default function RecipeEditPage() {
     if (!recipeId) return;
 
     // 1) 레시피 디테일
-    fetch(`http://localhost:8080/api/recipes/${recipeId}`)
+    fetch(`${apiUrl}/api/recipes/${recipeId}`)
       .then((res) => {
         if (!res.ok) throw new Error("데이터를 불러오는데 실패했습니다.");
         return res.json();
@@ -118,7 +119,7 @@ export default function RecipeEditPage() {
       .catch((e) => setError(e.message));
 
     // 2) 카테고리 목록
-    fetch("http://localhost:8080/api/categories")
+    fetch(`${apiUrl}/api/categories`)
       .then((res) => {
         if (!res.ok) throw new Error("카테고리 조회 실패");
         return res.json();
@@ -212,7 +213,7 @@ export default function RecipeEditPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/api/categories", {
+      const res = await fetch(`${apiUrl}/api/categories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newCategoryName.trim() }),
@@ -280,7 +281,7 @@ export default function RecipeEditPage() {
     };
 
     try {
-      const res = await fetch(`http://localhost:8080/api/recipes/${recipeId}`, {
+      const res = await fetch(`${apiUrl}/api/recipes/${recipeId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

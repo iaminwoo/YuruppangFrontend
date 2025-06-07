@@ -16,6 +16,7 @@ interface PurchaseItem {
 }
 
 export default function PurchasePage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
 
   // ──────────────────────────────────────────────────────────────────────────────
@@ -122,14 +123,11 @@ export default function PurchasePage() {
     };
 
     try {
-      const res = await fetch(
-        "http://localhost:8080/api/ingredientLogs/purchase",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch(`${apiUrl}/api/ingredientLogs/purchase`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
       if (!res.ok) {
         const errData = await res.json();

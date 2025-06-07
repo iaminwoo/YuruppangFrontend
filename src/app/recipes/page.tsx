@@ -26,6 +26,7 @@ interface ApiResponse {
 }
 
 export default function RecipePage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
 
   // ─── 추가된 상태 ───────────────────────────────
@@ -43,7 +44,7 @@ export default function RecipePage() {
       try {
         // 백엔드가 로컬에서 8080 포트로 동작 중이라고 가정
         const res = await fetch(
-          "http://localhost:8080/api/recipes?page=0&size=5&sortBy=id"
+          `${apiUrl}/api/recipes?page=0&size=5&sortBy=id`
         );
         if (!res.ok) {
           throw new Error(`네트워크 응답 오류: ${res.status}`);

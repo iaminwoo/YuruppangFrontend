@@ -21,6 +21,7 @@ const getTodayString = (): string => {
 };
 
 export default function UsagePage() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
 
   // ──────────────────────────────────────────────────────────────────────────────
@@ -106,7 +107,7 @@ export default function UsagePage() {
     };
 
     try {
-      const res = await fetch("http://localhost:8080/api/ingredientLogs/use", {
+      const res = await fetch(`${apiUrl}/api/ingredientLogs/use`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -23,6 +23,7 @@ interface Category {
 }
 
 export default function RecipeForm() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -59,7 +60,7 @@ export default function RecipeForm() {
 
   // 컴포넌트 마운트 시 카테고리 목록 불러오기
   useEffect(() => {
-    fetch("http://localhost:8080/api/categories")
+    fetch(`${apiUrl}/api/categories`)
       .then((res) => {
         if (!res.ok) throw new Error("카테고리 조회 실패");
         return res.json();
@@ -143,7 +144,7 @@ export default function RecipeForm() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/api/categories", {
+      const res = await fetch(`${apiUrl}/api/categories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newCategoryName.trim() }),
@@ -229,7 +230,7 @@ export default function RecipeForm() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/api/recipes", {
+      const res = await fetch(`${apiUrl}/api/recipes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

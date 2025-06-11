@@ -150,8 +150,8 @@ export default function PurchasePage() {
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans">
       <Navbar />
-      <main className="px-4 py-6 max-w-3xl mx-auto w-full space-y-6">
-        <h2 className="text-2xl font-bold text-[#4E342E] mb-4 mt-2">
+      <main className="px-4 py-6 max-w-3xl mx-auto w-full space-y-4">
+        <h2 className="text-xl font-bold text-[#4E342E] mb-4 mt-2">
           구매 기록 추가
         </h2>
 
@@ -161,7 +161,7 @@ export default function PurchasePage() {
             설명
           </label>
           <textarea
-            className="w-full p-3 rounded border border-gray-300 resize-none focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
+            className="w-full text-sm p-3 rounded border border-gray-300 resize-none focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
             placeholder="구매 설명을 입력하세요"
             rows={3}
             value={description}
@@ -180,7 +180,7 @@ export default function PurchasePage() {
           <input
             id="purchase-date"
             type="date"
-            className="w-full max-w-xs rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
+            className="w-full max-w-xs text-sm rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
             value={actualAt}
             onChange={(e) => setActualAt(e.target.value)}
           />
@@ -193,7 +193,7 @@ export default function PurchasePage() {
           {items.map((item, idx) => (
             <div
               key={idx}
-              className="bg-[#FFF8F0] rounded-xl shadow-md border p-6 flex flex-col gap-4 md:flex-row md:items-center md:gap-4"
+              className="bg-[#FFF8F0] rounded-xl shadow-md border px-6 py-3 flex flex-col gap-2 md:flex-row md:items-center md:gap-4"
             >
               <button
                 type="button"
@@ -201,14 +201,14 @@ export default function PurchasePage() {
                   setCurrentIngredientIndex(idx);
                   setShowIngredientModal(true);
                 }}
-                className={`flex-grow border border-gray-300 p-2 text-left ${
+                className={`flex-grow border border-gray-300 px-2 py-1 text-sm text-left ${
                   item.name ? "text-gray-900" : "text-gray-400"
                 }`}
               >
                 {item.name || "재료명을 선택하세요"}
               </button>
 
-              <div className="flex gap-2 w-full md:w-auto">
+              <div className="flex gap-3 w-full md:w-auto">
                 <input
                   type="number"
                   placeholder="총 수량"
@@ -217,10 +217,10 @@ export default function PurchasePage() {
                   onChange={(e) =>
                     handleItemChange(idx, "totalQuantity", e.target.value)
                   }
-                  className="w-full md:w-24 rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
+                  className="w-full md:w-24 text-sm rounded border border-gray-300 px-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
                 />
                 <select
-                  className="w-20 rounded border border-gray-300 p-2 bg-white"
+                  className="w-20 rounded border border-gray-300 px-2 py-1 bg-white"
                   value={item.unit}
                   onChange={(e) =>
                     handleItemChange(idx, "unit", e.target.value as Unit)
@@ -232,22 +232,25 @@ export default function PurchasePage() {
                 </select>
               </div>
 
-              <input
-                type="number"
-                placeholder="총 가격(원)"
-                min="0"
-                value={item.totalPrice}
-                onChange={(e) =>
-                  handleItemChange(idx, "totalPrice", e.target.value)
-                }
-                className="w-full md:w-28 rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
-              />
+              <div>
+                <input
+                  type="number"
+                  placeholder="총 가격(원)"
+                  min="0"
+                  value={item.totalPrice}
+                  onChange={(e) =>
+                    handleItemChange(idx, "totalPrice", e.target.value)
+                  }
+                  className="md:w-28 text-sm rounded border border-gray-300 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
+                />
+                <span className="text-sm px-1">원</span>
+              </div>
 
               <div className="w-full md:w-auto flex justify-end">
                 <button
                   type="button"
                   onClick={() => removeItem(idx)}
-                  className="text-red-500 font-bold text-2xl"
+                  className="text-red-500 font-bold text-xl"
                   aria-label="재료 삭제"
                 >
                   &times;

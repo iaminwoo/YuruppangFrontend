@@ -568,12 +568,12 @@ export default function PlanDetailPage() {
 
   return (
     <>
-      <div className="bg-[#FFFDF8] min-h-screen font-sans">
+      <div className="bg-[#FFFDF8] min-h-screen font-sans text-sm">
         <Navbar />
         <main className="p-6 max-w-5xl mx-auto space-y-10">
           {/* 1. 플랜 이름 */}
           <section>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800">
+            <h2 className="text-xl sm:text-3xl font-extrabold text-gray-800">
               {plan.name}
             </h2>
           </section>
@@ -581,18 +581,18 @@ export default function PlanDetailPage() {
           {/* 2. 부족한 재료 목록 */}
           {!plan.isComplete && plan.lackIngredients.length > 0 && (
             <section>
-              <h2 className="text-2xl font-extrabold text-[#4E342E] mb-2">
+              <h2 className="text-xl font-extrabold text-[#4E342E] mb-2">
                 🛒 부족한 재료{" "}
-                <span className="block sm:inline text-xl font-bold text-gray-500">
+                <span className="block sm:inline text-base font-bold text-gray-500">
                   (재료 클릭시 쿠팡으로 이동합니다.)
                 </span>
               </h2>
-              <div className="space-y-4">
-                <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-6 py-2 flex items-center justify-between text-[#4E342E] font-semibold text-lg">
-                  <div className="min-w-[100px] text-center">재료명</div>
-                  <div className="min-w-[80px] text-center">필요량</div>
-                  <div className="min-w-[80px] text-center">보유량</div>
-                  <div className="min-w-[80px] text-center">부족량</div>
+              <div className="space-y-3">
+                <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-6 py-2 flex items-center justify-between text-[#4E342E] font-semibold">
+                  <div className="flex-1 text-center">재료명</div>
+                  <div className="flex-1 text-center">필요량</div>
+                  <div className="flex-1 text-center">보유량</div>
+                  <div className="flex-1 text-center">부족량</div>
                 </div>
                 {plan.lackIngredients.map((item) => (
                   <div
@@ -605,18 +605,18 @@ export default function PlanDetailPage() {
                         "_blank"
                       )
                     }
-                    className="bg-[#FFF8F0] rounded-xl shadow-md border px-6 py-4 flex items-center justify-between hover:bg-[#FFF0DA] transition"
+                    className="bg-[#FFF8F0] rounded-xl shadow-md border px-6 py-2 flex items-center justify-between hover:bg-[#FFF0DA] transition"
                   >
-                    <div className="text-lg text-center font-semibold text-[#4E342E] min-w-[100px]">
+                    <div className="text-center font-semibold text-[#4E342E] flex-1">
                       {item.name}
                     </div>
-                    <div className="text-md text-center text-[#4E342E] min-w-[80px]">
+                    <div className="text-center text-[#4E342E] flex-1">
                       {item.requiredQuantity.toLocaleString()}
                     </div>
-                    <div className="text-md text-center text-[#4E342E] min-w-[80px]">
+                    <div className="text-center text-[#4E342E] flex-1">
                       {item.currentStock.toLocaleString()}
                     </div>
-                    <div className="text-md text-center font-semibold text-red-500 min-w-[80px]">
+                    <div className="text-center font-semibold text-red-500 flex-1">
                       {item.lackingQuantity.toLocaleString()}
                     </div>
                   </div>
@@ -627,13 +627,13 @@ export default function PlanDetailPage() {
 
           {/* 3. 레시피 선택 & 추가 */}
           <section>
-            <div className="flex gap-2 items-center mb-4">
-              <h2 className="text-2xl font-extrabold mb-0">레시피 선택</h2>
+            <div className="flex gap-2 items-center mb-3">
+              <h2 className="text-xl font-extrabold mb-0">레시피 선택</h2>
 
               {!plan.isComplete && (
                 <Button
                   onClick={() => setShowAddModal(true)}
-                  className="bg-[#D7B49E] text-white px-4 py-2 rounded-full"
+                  className="bg-[#D7B49E] text-white px-3 py-2 rounded-full"
                 >
                   + 레시피 추가
                 </Button>
@@ -646,7 +646,7 @@ export default function PlanDetailPage() {
                 <Button
                   key={recipe.recipeId}
                   onClick={() => setSelectedRecipeIndex(idx)}
-                  className={`rounded-full px-4 py-2 text-lg font-semibold transition ${
+                  className={`rounded-full px-4 py-2 font-semibold transition ${
                     idx === selectedRecipeIndex
                       ? "bg-[#A97155] text-white"
                       : "bg-[#EAD9C4] text-[#7C6E65]"
@@ -664,14 +664,14 @@ export default function PlanDetailPage() {
                 <div className="absolute top-4 right-4 flex gap-2">
                   <Button
                     onClick={handleReset}
-                    className="px-4 py-2 rounded-md hover:text-red-500"
+                    className="px-3 py-1 text-xs rounded-md hover:text-red-500"
                   >
                     RESET
                   </Button>
                   <Button
                     onClick={handleRemoveCurrentRecipe}
                     variant="destructive"
-                    className="px-4 py-2 rounded-md"
+                    className="px-3 py-1 text-xs rounded-md"
                   >
                     제외
                   </Button>
@@ -681,32 +681,32 @@ export default function PlanDetailPage() {
               {/* 레시피 제목 & 설명 */}
               {plan.isComplete ? (
                 <div>
-                  <h3 className="text-3xl font-semibold mb-1">
+                  <h3 className="text-xl font-semibold mb-1">
                     {editingRecipe.customName}
                   </h3>
-                  <p className="text-sm mb-3 whitespace-pre-wrap">
+                  <p className="mb-3 whitespace-pre-wrap">
                     {editingRecipe.customDescription}
                   </p>
                 </div>
               ) : (
                 <div>
-                  <h3 className="text-3xl font-semibold mb-1">
+                  <h3 className="text-xl font-semibold mb-1">
                     {editingRecipe.name}
                   </h3>
-                  <p className="text-sm mb-3 whitespace-pre-wrap">
+                  <p className="mb-3 whitespace-pre-wrap">
                     {editingRecipe.description}
                   </p>
                 </div>
               )}
 
-              <div className="h-px bg-gray-300 my-4" />
+              <div className="h-px bg-gray-300 my-3" />
 
-              <div className="flex gap-3 items-center">
-                <p className="text-md whitespace-pre-wrap">
+              <div className="flex gap-1 items-center">
+                <p className="whitespace-pre-wrap">
                   레시피 원가 : {editingRecipe.totalPrice}원
                 </p>
 
-                <div className="text-sm whitespace-pre-wrap">
+                <div className="whitespace-pre-wrap">
                   ( 개당 원가 :{" "}
                   {(() => {
                     const qty = Number(editingRecipe.goalQuantity); // 문자열이라도 숫자로 바꾼다
@@ -720,7 +720,7 @@ export default function PlanDetailPage() {
                 </div>
               </div>
 
-              <div className="text-sm mb-6 whitespace-pre-wrap text-red-400">
+              <div className="mb-6 whitespace-pre-wrap text-red-400">
                 구매해보지 않은 재료가 있으면{" "}
                 <span className="sm:inline block">
                   원가계산이 정확하지 않습니다.
@@ -731,47 +731,46 @@ export default function PlanDetailPage() {
 
               {/* 목표 수량 변경 */}
               {!plan.isComplete && (
-                <div className="flex justify-between items-end mb-6">
-                  <div>
-                    <label
-                      htmlFor="goalQuantity"
-                      className="block mb-1 font-semibold"
-                    >
-                      목표 수량 (레시피 기본 수량:{" "}
-                      {editingRecipe.outputQuantity}개)
-                    </label>
-                    <input
-                      id="goalQuantity"
-                      type="number"
-                      className="border rounded-md p-2 w-20 text-center text-xl"
-                      value={newGoalQuantity}
-                      onChange={(e) => setNewGoalQuantity(e.target.value)}
-                    />
+                <div>
+                  <label htmlFor="goalQuantity" className="font-semibold">
+                    목표 수량 (레시피 기본 수량: {editingRecipe.outputQuantity}
+                    개)
+                  </label>
+                  <div className="flex justify-between items-end mb-6 mt-2">
+                    <div>
+                      <input
+                        id="goalQuantity"
+                        type="number"
+                        className="border rounded-md p-2 w-20 text-center"
+                        value={newGoalQuantity}
+                        onChange={(e) => setNewGoalQuantity(e.target.value)}
+                      />
+
+                      <Button
+                        onClick={handleGoalQuantitySubmit}
+                        className="ml-3 px-3 py-1 rounded-md"
+                      >
+                        변경
+                      </Button>
+
+                      <div className="mt-2">
+                        현재 배율 : {editingRecipe.percent} %
+                      </div>
+                    </div>
 
                     <Button
-                      onClick={handleGoalQuantitySubmit}
-                      className="ml-3 px-3 py-1 rounded-md"
+                      onClick={initScaleModal}
+                      className="ml-3 px-3 py-1 rounded-md bg-[#A97155] text-white"
                     >
-                      변경
+                      배율 변경
                     </Button>
-
-                    <div className="mt-2">
-                      현재 배율 : {editingRecipe.percent} %
-                    </div>
                   </div>
-
-                  <Button
-                    onClick={initScaleModal}
-                    className="ml-3 px-3 py-1 rounded-md bg-[#A97155] text-white"
-                  >
-                    배율 변경
-                  </Button>
                 </div>
               )}
               {plan.isComplete && (
                 <label
                   htmlFor="goalQuantity"
-                  className="block mb-1 font-semibold text-xl"
+                  className="block mb-1 font-semibold"
                 >
                   목표 수량 : {editingRecipe.goalQuantity} 개
                 </label>
@@ -786,7 +785,7 @@ export default function PlanDetailPage() {
                     <div key={pIdx}>
                       <div className="flex gap-2 items-end">
                         {part.partName !== "기본" && (
-                          <h5 className="text-lg font-semibold mb-2">
+                          <h5 className="font-semibold mb-2">
                             {part.partName}
                           </h5>
                         )}
@@ -797,7 +796,7 @@ export default function PlanDetailPage() {
                       </div>
 
                       {plan.isComplete ? (
-                        <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-4 flex items-center justify-between text-[#4E342E] font-semibold text-lg">
+                        <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-4 flex items-center justify-between text-[#4E342E] font-semibold">
                           <div className="flex-1 min-w-0 text-center">
                             재료명
                           </div>
@@ -806,7 +805,7 @@ export default function PlanDetailPage() {
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-4 flex items-center justify-between text-[#4E342E] font-semibold text-lg">
+                        <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-4 flex items-center justify-between text-[#4E342E] font-semibold">
                           <div className="flex-5 min-w-0 text-center">
                             재료명
                           </div>
@@ -824,7 +823,7 @@ export default function PlanDetailPage() {
                         {part.comparedIngredients.map((ing, iIdx) => (
                           <div
                             key={ing.ingredientId}
-                            className="bg-[#FFF8F0] rounded-xl shadow-md border px-2 py-4 flex hover:bg-[#FFF0DA] transition"
+                            className="bg-[#FFF8F0] rounded-xl shadow-md border px-2 py-3 flex hover:bg-[#FFF0DA] transition"
                           >
                             {/* 재료명 */}
                             {plan.isComplete ? (
@@ -882,7 +881,7 @@ export default function PlanDetailPage() {
                                   }
                                 />
                                 <select
-                                  className="border border-gray-300 rounded px-1 py-1 text-sm"
+                                  className="border border-gray-300 rounded px-1 py-1"
                                   value={ing.unit}
                                   onChange={(e) =>
                                     handleIngredientChange(
@@ -943,7 +942,7 @@ export default function PlanDetailPage() {
 
           {/* 5. 메모 입력 */}
           <section>
-            <h2 className="text-2xl font-extrabold mb-3">메모</h2>
+            <h2 className="text-xl font-extrabold mb-3">메모</h2>
             <div className="bg-white py-6 px-4 rounded-xl shadow">
               <textarea
                 className="w-full h-40 p-3 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"

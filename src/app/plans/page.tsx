@@ -70,10 +70,10 @@ export default function YuruppangPlanListPage() {
   };
 
   return (
-    <div className="bg-[#FFFDF8] min-h-screen font-sans flex flex-col">
+    <div className="bg-[#FFFDF8] min-h-screen font-sans flex flex-col text-sm">
       <Navbar />
       <main className="px-4 py-6 max-w-3xl mx-auto w-full flex-grow">
-        <h2 className="text-4xl font-bold text-[#4E342E] mb-6 mt-3">
+        <h2 className="text-xl font-bold text-[#4E342E] mb-6 mt-3">
           베이킹 플랜 목록
         </h2>
 
@@ -84,7 +84,7 @@ export default function YuruppangPlanListPage() {
           <div className="p-4 text-center text-red-500">에러: {error}</div>
         )}
 
-        <ul className="space-y-4">
+        <ul className="space-y-3">
           {plans.map((plan) => (
             <li
               key={plan.planId}
@@ -92,14 +92,14 @@ export default function YuruppangPlanListPage() {
               className="p-4 bg-[#FFEED9] rounded-xl text-[#A97155] shadow-md cursor-pointer hover:bg-[#FFDFAE] transition"
               title="상세보기"
             >
-              <div className="font-bold text-xl mb-1">{plan.planName}</div>
-              <div className="font-bold mb-1 text-sm">
+              <div className="font-bold mb-1">{plan.planName}</div>
+              <div className="font-bold mb-1">
                 포함된 레시피 : <br className="sm:hidden" />
-                <span className="text-gray-600 text-lg">
+                <span className="text-gray-600">
                   {plan.recipeNames.join(" /  ")}
                 </span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between">
                 <div className="text-gray-600">
                   레시피 개수: {plan.recipeCount}개
                 </div>

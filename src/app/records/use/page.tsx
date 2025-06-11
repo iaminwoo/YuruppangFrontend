@@ -136,46 +136,51 @@ export default function UsagePage() {
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans">
       <Navbar />
-      <main className="px-4 py-6 max-w-3xl mx-auto w-full space-y-6">
-        <h2 className="text-2xl font-bold text-[#4E342E] mb-4 mt-2">
+      <main className="px-4 py-6 max-w-3xl mx-auto w-full space-y-4">
+        <h2 className="text-xl font-bold text-[#4E342E] mb-4 mt-2">
           소비 기록 추가
         </h2>
 
         {/* 소비 설명 */}
-        <textarea
-          className="w-full p-3 rounded border border-gray-300 resize-none focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
-          placeholder="소비 설명을 입력하세요"
-          rows={3}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <div>
+          <label className="block font-semibold mb-1 text-[#4E342E]">
+            설명
+          </label>
+          <textarea
+            className="w-full p-3 text-sm rounded border border-gray-300 resize-none focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
+            placeholder="소비 설명을 입력하세요"
+            rows={3}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
 
         {/* 소비 날짜 (기본값: 오늘) */}
         <div className="flex flex-col gap-2">
           <label
             htmlFor="usage-date"
-            className="text-xl font-semibold text-[#4E342E] mb-2"
+            className="font-semibold text-[#4E342E] mb-2"
           >
             소비 날짜
           </label>
           <input
             id="usage-date"
             type="date"
-            className="w-full max-w-xs rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
+            className="w-full text-sm max-w-xs rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
             value={actualAt}
             onChange={(e) => setActualAt(e.target.value)}
           />
         </div>
 
         {/* 재료 목록 제목 */}
-        <h3 className="text-xl font-semibold text-[#4E342E] mb-2">재료 목록</h3>
+        <h3 className="font-semibold text-[#4E342E] mb-2">재료 목록</h3>
 
         {/* 재료 목록 */}
         <div className="space-y-4">
           {items.map((item, idx) => (
             <div
               key={idx}
-              className="bg-[#FFF8F0] rounded-xl shadow-md border p-6 flex flex-col md:flex-row md:items-center gap-4"
+              className="bg-[#FFF8F0] rounded-xl shadow-md border px-6 py-3 flex flex-col md:flex-row md:items-center gap-4"
             >
               <button
                 type="button"
@@ -183,7 +188,7 @@ export default function UsagePage() {
                   setCurrentIngredientIndex(idx);
                   setShowIngredientModal(true);
                 }}
-                className={`flex-grow border border-gray-300 p-2 rounded text-left ${
+                className={`flex-grow border border-gray-300 p-2 rounded text-sm text-left ${
                   item.name ? "text-gray-900" : "text-gray-400"
                 }`}
               >
@@ -199,15 +204,15 @@ export default function UsagePage() {
                   onChange={(e) =>
                     handleItemChange(idx, "totalQuantity", e.target.value)
                   }
-                  className="w-full md:w-24 rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
+                  className="w-full md:w-24 text-sm rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
                 />
-                <div className="text-gray-500">g / ml / 개</div>
+                <div className="text-gray-500 text-sm">g / ml / 개</div>
               </div>
 
               <button
                 type="button"
                 onClick={() => removeItem(idx)}
-                className="text-red-500 font-bold text-xl self-end md:self-center md:ml-auto"
+                className="text-red-500 font-bold text-lg self-end md:self-center md:ml-auto"
                 aria-label="재료 삭제"
               >
                 &times;

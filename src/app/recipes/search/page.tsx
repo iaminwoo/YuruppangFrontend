@@ -209,7 +209,7 @@ export default function RecipeListPage() {
         {/* 추가된 레시피 */}
         {addedRecipes.length > 0 && (
           <div className="mb-6 p-4 bg-[#FFF1D0] rounded-xl shadow-md">
-            <h3 className="font-bold text-2xl text-[#4E342E] mb-2">
+            <h3 className="font-bold text-xl text-[#4E342E] mb-2">
               추가된 레시피
             </h3>
             <div className="flex flex-wrap gap-3 mb-4">
@@ -217,7 +217,7 @@ export default function RecipeListPage() {
                 <button
                   key={recipe.recipeId}
                   onClick={() => handleRemove(recipe.recipeId)}
-                  className="px-3 py-1 bg-[#D7B49E] text-lg font-semibold text-white rounded-full hover:bg-[#B89B7D]"
+                  className="px-3 py-1 bg-[#D7B49E] text-md font-semibold text-white rounded-full hover:bg-[#B89B7D]"
                   title="클릭 시 제거"
                 >
                   {recipe.recipeName}
@@ -227,7 +227,7 @@ export default function RecipeListPage() {
             <div className="flex justify-end">
               <Button
                 onClick={handleProduce}
-                className="bg-[#A97155] text-white text-lg py-2 rounded-xl"
+                className="bg-[#A97155] text-white text-base py-2 rounded-xl"
               >
                 베이킹 플랜 제작
               </Button>
@@ -235,7 +235,7 @@ export default function RecipeListPage() {
           </div>
         )}
 
-        <h2 className="text-4xl font-bold text-[#4E342E] mb-6 mt-3">
+        <h2 className="text-xl font-bold text-[#4E342E] mb-3 mt-3">
           레시피 목록
         </h2>
 
@@ -248,7 +248,7 @@ export default function RecipeListPage() {
             placeholder="레시피 이름 검색"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            className="flex-1 min-w-0 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A97155]"
+            className="flex-1 min-w-0 text-sm border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A97155]"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 handleSearch();
@@ -259,7 +259,7 @@ export default function RecipeListPage() {
           {/* 검색 버튼 */}
           <Button
             onClick={handleSearch}
-            className="bg-[#A97155] text-white px-4 py-5 rounded-xl"
+            className="bg-[#A97155] text-white px-4 py-4 rounded-xl"
           >
             검색
           </Button>
@@ -267,70 +267,74 @@ export default function RecipeListPage() {
         {/* ───────────────────────────────────────────── */}
 
         {/* 카테고리 필터 버튼 영역 */}
-        {categoryList.length > 0 && (
-          <div className="flex gap-2 flex-wrap mb-4">
-            <button
-              className={`px-3 py-1 rounded-xl font-semibold ${
-                selectedCategory === null
-                  ? "bg-[#A97155] text-white"
-                  : "bg-[#F2E3D5]"
-              }`}
-              onClick={() => {
-                setSelectedCategory(null);
-                setPage(0);
-              }}
-            >
-              전체
-            </button>
-            {categoryList.map((cat) => (
+        <div className="flex flex-col">
+          {categoryList.length > 0 && (
+            <div className="flex gap-2 flex-wrap mb-2 text-sm">
               <button
-                key={cat.categoryId}
                 className={`px-3 py-1 rounded-xl font-semibold ${
-                  selectedCategory === cat.categoryId
+                  selectedCategory === null
                     ? "bg-[#A97155] text-white"
                     : "bg-[#F2E3D5]"
                 }`}
                 onClick={() => {
-                  setSelectedCategory(cat.categoryId);
+                  setSelectedCategory(null);
                   setPage(0);
                 }}
               >
-                {cat.categoryName}
+                전체
               </button>
-            ))}
+              {categoryList.map((cat) => (
+                <button
+                  key={cat.categoryId}
+                  className={`px-3 py-1 rounded-xl font-semibold ${
+                    selectedCategory === cat.categoryId
+                      ? "bg-[#A97155] text-white"
+                      : "bg-[#F2E3D5]"
+                  }`}
+                  onClick={() => {
+                    setSelectedCategory(cat.categoryId);
+                    setPage(0);
+                  }}
+                >
+                  {cat.categoryName}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="flex gap-2 items-center text-sm">
+            {/* 정렬 기준 select */}
+            <select
+              value={sortBy}
+              onChange={(e) => {
+                // "id" or "name"을 사용
+                setSortBy(e.target.value as "id" | "name");
+                setPage(0); // 정렬 기준이 바뀌면 페이지 0으로
+              }}
+              className="border border-gray-300 rounded-xl px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#A97155]"
+            >
+              <option value="id">최신순</option>
+              <option value="name">이름순</option>
+            </select>
+
+            {/* 즐겨찾기 토글 버튼 */}
+            <button
+              className={`px-3 py-1 rounded-xl font-semibold ${
+                favorite
+                  ? "bg-pink-400 text-white"
+                  : "bg-[#F2E3D5] text-gray-800"
+              }`}
+              onClick={() => {
+                setFavorite(!favorite);
+                setPage(0);
+              }}
+            >
+              ♥ 즐겨찾기
+            </button>
           </div>
-        )}
-
-        <div className="flex gap-2 mb-4 items-center">
-          {/* 정렬 기준 select */}
-          <select
-            value={sortBy}
-            onChange={(e) => {
-              // "id" or "name"을 사용
-              setSortBy(e.target.value as "id" | "name");
-              setPage(0); // 정렬 기준이 바뀌면 페이지 0으로
-            }}
-            className="border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#A97155]"
-          >
-            <option value="id">최신순</option>
-            <option value="name">이름순</option>
-          </select>
-
-          {/* 즐겨찾기 토글 버튼 */}
-          <button
-            className={`px-3 py-2 rounded-xl font-semibold ${
-              favorite ? "bg-pink-400 text-white" : "bg-[#F2E3D5] text-gray-800"
-            }`}
-            onClick={() => {
-              setFavorite(!favorite);
-              setPage(0);
-            }}
-          >
-            ♥ 즐겨찾기
-          </button>
         </div>
 
-        <div className="h-px bg-gray-300 my-6" />
+        <div className="h-px bg-gray-300 my-4" />
 
         {/* 레시피 리스트 */}
         <ul className="space-y-4">
@@ -341,7 +345,7 @@ export default function RecipeListPage() {
             >
               <Button
                 onClick={() => handleAdd(recipe)}
-                className="mr-3 py-5 bg-[#D7B49E] text-white text-lg rounded-xl"
+                className="mr-3 py-3 bg-[#D7B49E] text-white text-sm rounded-xl"
               >
                 추가
               </Button>

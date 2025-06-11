@@ -254,10 +254,10 @@ export default function RecipeForm() {
   };
 
   return (
-    <div className="bg-[#FFFDF8] min-h-screen font-sans">
+    <div className="bg-[#FFFDF8] min-h-screen font-sans text-sm">
       <Navbar />
       <main className="px-4 py-6 max-w-3xl mx-auto w-full space-y-6">
-        <h2 className="text-2xl font-bold text-[#4E342E] mb-4 mt-2">
+        <h2 className="text-xl font-bold text-[#4E342E] mb-4 mt-2">
           레시피 등록
         </h2>
 

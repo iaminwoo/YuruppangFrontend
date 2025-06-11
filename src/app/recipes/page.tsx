@@ -70,24 +70,24 @@ export default function RecipePage() {
     <div className="bg-[#FFFDF8] min-h-screen font-sans">
       <Navbar />
       <main className="px-4 py-6 max-w-4xl mx-auto w-full space-y-6">
-        <h2 className="text-2xl font-bold text-[#4E342E] mb-4">레시피 관리</h2>
+        <h2 className="text-xl font-bold text-[#4E342E] mb-4">레시피 관리</h2>
 
         {/* 버튼 영역 */}
         <div className="flex gap-2 sm:gap-4 mb-6">
           <Button
-            className="flex-2 bg-[#D7B49E] text-white py-8 text-lg rounded-xl"
+            className="flex-2 bg-[#D7B49E] text-white py-6 rounded-xl"
             onClick={() => router.push("/recipes/search")}
           >
             레시피 검색
           </Button>
           <Button
-            className="flex-2 bg-[#C89F84] text-white py-8 text-lg rounded-xl"
+            className="flex-2 bg-[#C89F84] text-white py-6 rounded-xl"
             onClick={() => router.push("/recipes/add")}
           >
             레시피 등록
           </Button>
           <Button
-            className="flex-1 bg-[#B9896D] text-white py-8 text-lg rounded-xl"
+            className="flex-1 bg-[#B9896D] text-white py-6 rounded-xl"
             onClick={() => router.push("/recipes/categories")}
           >
             <span className="block text-sm sm:hidden">
@@ -101,7 +101,7 @@ export default function RecipePage() {
 
         {/* ─────────── 최신 5개 레시피 영역 ─────────── */}
         <div className="w-full bg-[#FFEED9] rounded-xl p-4">
-          <h3 className="text-xl font-semibold text-[#4E342E] mb-3">
+          <h3 className="text-base font-semibold text-[#4E342E] mb-3">
             최근 등록된 레시피
           </h3>
 
@@ -129,7 +129,7 @@ export default function RecipePage() {
                   className="p-3 bg-white rounded-lg flex justify-center items-center shadow-sm hover:bg-[#F9F5F1] cursor-pointer"
                   onClick={() => router.push(`/recipes/${recipe.recipeId}`)}
                 >
-                  <span className="text-lg font-bold text-[#4E342E]">
+                  <span className="text-base font-bold text-[#4E342E]">
                     {recipe.recipeName}
                   </span>
                 </li>
@@ -139,21 +139,21 @@ export default function RecipePage() {
         </div>
         {/* ────────────────────────────────────────── */}
 
-        <h2 className="text-2xl font-bold text-[#4E342E] mb-4 mt-12">
+        <h2 className="text-xl font-bold text-[#4E342E] mb-4 mt-8">
           베이킹 플랜 관리
         </h2>
 
         {/* 버튼 영역 */}
         <div className="flex gap-4 mb-6">
           <Button
-            className="flex-1 bg-[#D7B49E] text-white py-8 text-lg rounded-xl"
+            className="flex-1 bg-[#D7B49E] text-white py-6 text-sm rounded-xl"
             onClick={() => router.push("/plans")}
           >
             베이킹 플랜 검색
           </Button>
         </div>
 
-        <div className="w-full h-32 bg-[#FFEED9] rounded-xl flex items-center justify-center text-[#A97155]">
+        <div className="w-full text-sm h-32 bg-[#FFEED9] rounded-xl flex items-center justify-center text-[#A97155]">
           <span>베이킹 플랜이 여기에 표시됩니다 (최신 5개)</span>
         </div>
       </main>

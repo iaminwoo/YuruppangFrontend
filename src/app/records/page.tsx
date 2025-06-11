@@ -78,7 +78,7 @@ export default function RecordsPage() {
       <Navbar />
 
       <main className="px-4 py-6 max-w-3xl mx-auto w-full flex-grow">
-        <h2 className="text-2xl font-bold text-[#4E342E] mb-4">기록 확인</h2>
+        <h2 className="text-xl font-bold text-[#4E342E] mb-4">기록 확인</h2>
 
         {loading && (
           <div className="p-4 text-center text-[#A97155]">로딩중...</div>
@@ -94,45 +94,48 @@ export default function RecordsPage() {
                 <li
                   key={record.id}
                   onClick={() => router.push(`/records/${record.id}`)}
-                  className="p-4 bg-[#FFEED9] rounded-xl text-[#A97155] shadow-md"
+                  className="py-2 px-6 md:py-4 bg-[#FFEED9] rounded-xl text-[#A97155] shadow-md"
                 >
-                  {/* 상단: 날짜 & 타입 */}
-                  <div className="flex justify-between mb-2 text-md">
-                    <span>{record.actualAt.replace(/-/g, ".")}</span>
+                  <div className="flex justify-between">
+                    {/* 좌측 */}
+                    <div className="flex flex-col gap-1">
+                      {/* 상단: 날짜 & 타입 */}
+                      <span>{record.actualAt.replace(/-/g, ".")}</span>
 
-                    <span
-                      className={`font-semibold ${
-                        record.type === "PURCHASE"
-                          ? "text-green-600"
+                      <span
+                        className={`font-semibold ${
+                          record.type === "PURCHASE"
+                            ? "text-green-600"
+                            : record.type === "CONSUMPTION"
+                            ? "text-red-600"
+                            : "text-gray-600"
+                        }`}
+                      >
+                        {record.type === "PURCHASE"
+                          ? "구매"
                           : record.type === "CONSUMPTION"
-                          ? "text-red-600"
-                          : "text-gray-600"
-                      }`}
-                    >
-                      {record.type === "PURCHASE"
-                        ? "구매"
-                        : record.type === "CONSUMPTION"
-                        ? "소비"
-                        : record.type}
-                    </span>
-                  </div>
+                          ? "소비"
+                          : record.type}
+                      </span>
 
-                  {/* 설명 */}
-                  <div className="text-sm mb-2">{record.description}</div>
-
-                  {/* 재료명 / 수량 / 총 가격 */}
-                  <div className="flex justify-between items-center text-base font-medium">
-                    <span className="flex-1 text-lg font-bold">
-                      {record.ingredientName}
-                    </span>
-                    <span className="flex-1 text-center">
-                      {record.quantity.toLocaleString()} {record.unit}
-                    </span>
-                    <span className="flex-1 text-right">
-                      {record.totalPrice !== null
-                        ? `${record.totalPrice.toLocaleString()}원`
-                        : "-"}
-                    </span>
+                      {/* 설명 */}
+                      <div className="mb-2 text-sm">{record.description}</div>
+                    </div>
+                    {/* 우측 */}
+                    <div className="flex flex-col gap-1">
+                      {/* 재료명 / 수량 / 총 가격 */}
+                      <span className="flex-1 text-lg text-right font-bold">
+                        {record.ingredientName}
+                      </span>
+                      <span className="flex-1 text-right">
+                        {record.quantity.toLocaleString()} {record.unit}
+                      </span>
+                      <span className="flex-1 text-right">
+                        {record.totalPrice !== null
+                          ? `${record.totalPrice.toLocaleString()}원`
+                          : "-"}
+                      </span>
+                    </div>
                   </div>
                 </li>
               ))}

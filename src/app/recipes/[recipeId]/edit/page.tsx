@@ -267,7 +267,7 @@ export default function RecipeEditPage() {
           )
           .map((ing) => ({
             ingredientName: ing.ingredientName.trim(),
-            requiredQuantity: parseFloat(String(ing.requiredQuantity)),
+            quantity: parseFloat(String(ing.requiredQuantity)),
             unit: ing.unit,
           })),
       }));

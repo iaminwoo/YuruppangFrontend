@@ -570,7 +570,7 @@ export default function PlanDetailPage() {
     <>
       <div className="bg-[#FFFDF8] min-h-screen font-sans text-sm">
         <Navbar />
-        <main className="p-6 max-w-5xl mx-auto space-y-10">
+        <main className="p-3 sm:p-6 max-w-5xl mx-auto space-y-10">
           {/* 1. 플랜 이름 */}
           <section>
             <h2 className="text-xl sm:text-3xl font-extrabold text-gray-800">
@@ -658,7 +658,7 @@ export default function PlanDetailPage() {
             </div>
 
             {/* 4. 선택된 레시피 상세 카드 */}
-            <div className="bg-white rounded-xl p-4 pt-6 shadow space-y-2 relative">
+            <div className="bg-white rounded-xl px-3 py-6 shadow space-y-2 relative">
               {/* RESET / 제외 버튼 영역 */}
               {!plan.isComplete && (
                 <div className="absolute top-4 right-4 flex gap-2">
@@ -796,7 +796,7 @@ export default function PlanDetailPage() {
                       </div>
 
                       {plan.isComplete ? (
-                        <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-4 flex items-center justify-between text-[#4E342E] font-semibold">
+                        <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-3 flex items-center justify-between text-[#4E342E] font-semibold">
                           <div className="flex-1 min-w-0 text-center">
                             재료명
                           </div>
@@ -805,21 +805,21 @@ export default function PlanDetailPage() {
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-4 flex items-center justify-between text-[#4E342E] font-semibold">
-                          <div className="flex-5 min-w-0 text-center">
+                        <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-3 flex items-center justify-between text-[#4E342E] font-semibold">
+                          <div className="flex-1 min-w-0 text-center">
                             재료명
                           </div>
-                          <div className="flex-4 min-w-0 text-center">
+                          <div className="flex-1 min-w-0 text-center">
                             기본수량
                           </div>
-                          <div className="flex-4 min-w-0 text-center">
+                          <div className="flex-1 min-w-0 text-center">
                             필요수량
                           </div>
-                          <div className="flex-2 min-w-0 text-center"></div>
+                          <div className="w-12 min-w-0 text-center"></div>
                         </div>
                       )}
 
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         {part.comparedIngredients.map((ing, iIdx) => (
                           <div
                             key={ing.ingredientId}
@@ -827,7 +827,7 @@ export default function PlanDetailPage() {
                           >
                             {/* 재료명 */}
                             {plan.isComplete ? (
-                              <div className="flex-1 min-w-0 text-center">
+                              <div className="flex-2 min-w-0 text-center">
                                 {ing.ingredientName}
                               </div>
                             ) : (
@@ -838,7 +838,7 @@ export default function PlanDetailPage() {
                                   setCurrentIngredientIndex(iIdx);
                                   setShowIngredientModal(true);
                                 }}
-                                className={`flex-grow border-b border-gray-300 p-1 ${
+                                className={`flex-2 border-b border-gray-300 p-1 ${
                                   ing.ingredientName
                                     ? "text-gray-900"
                                     : "text-gray-400"
@@ -850,12 +850,12 @@ export default function PlanDetailPage() {
 
                             {/* 기본 수량 */}
                             {plan.isComplete ? (
-                              <div className="flex-1 min-w-0 flex items-center justify-center text-center text-gray-600">
+                              <div className="flex-2 min-w-0 flex items-center justify-center text-center text-gray-600">
                                 {ing.customizedQuantity.toLocaleString()}{" "}
                                 {ing.unit}
                               </div>
                             ) : (
-                              <div className="flex-1 min-w-0 flex items-center justify-center text-center text-gray-600">
+                              <div className="flex-2 min-w-0 flex items-center justify-center text-center text-gray-600">
                                 {ing.originalQuantity > 0
                                   ? `${ing.originalQuantity.toLocaleString()} ${
                                       ing.unit
@@ -866,7 +866,7 @@ export default function PlanDetailPage() {
 
                             {/* 필요량 + 단위 */}
                             {!plan.isComplete && (
-                              <div className="flex-1 min-w-0 flex items-center gap-1">
+                              <div className="flex-3 min-w-0 flex items-center gap-1">
                                 <input
                                   type="number"
                                   className="w-full text-center bg-transparent border-b border-gray-300 focus:outline-none"

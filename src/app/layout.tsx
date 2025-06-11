@@ -1,7 +1,17 @@
-// src/app/layout.tsx (또는 RootLayout.tsx)
+// src/app/layout.tsx
 
 import "./globals.css";
 import { Toaster } from "sonner";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "유루빵 | 제과제빵 관리 서비스",
+  description: "유루디아를 위한 제과제빵 웹 서비스",
+  viewport: "width=device-width, initial-scale=1",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
 
 export default function RootLayout({
   children,

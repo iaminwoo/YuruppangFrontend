@@ -146,6 +146,7 @@ export default function StockPage() {
             {ingredients.map((item) => (
               <div
                 key={item.ingredientName}
+                onClick={() => router.push(`/stock/${item.ingredientId}`)}
                 className="bg-[#FFF8F0] rounded-xl shadow-md border px-6 py-4 flex items-center justify-between hover:bg-[#FFF0DA] transition"
               >
                 <div className="text-center font-semibold text-[#4E342E] min-w-[100px]">

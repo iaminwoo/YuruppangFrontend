@@ -172,6 +172,7 @@ export default function IngredientSearchModal({
         {!isSearching && (
           <div className="mt-2">
             <Button
+              type="button"
               variant="outline"
               onClick={() => {
                 if (!keyword.trim()) {

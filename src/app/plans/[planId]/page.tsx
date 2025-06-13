@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
+import Linkify from "linkify-react";
 
 interface Ingredient {
   ingredientId: number;
@@ -161,6 +162,12 @@ export default function PlanDetailPage() {
 
   // 2) 파트별 배율 입력값 배열 (각 파트마다 입력할 퍼센트)
   const [partPercents, setPartPercents] = useState<number[]>([]);
+
+  const options = {
+    defaultProtocol: "https",
+    target: "_blank",
+    className: "text-blue-800 underline hover:text-blue-400",
+  };
 
   // ──────────────────────────────────────────────────────────────────────────────
   // 플랜 상세 조회 함수
@@ -760,7 +767,9 @@ export default function PlanDetailPage() {
                     {editingRecipe.customName}
                   </h3>
                   <p className="mb-3 whitespace-pre-wrap">
-                    {editingRecipe.customDescription}
+                    <Linkify options={options}>
+                      {editingRecipe.description}
+                    </Linkify>
                   </p>
                 </div>
               ) : (
@@ -769,7 +778,9 @@ export default function PlanDetailPage() {
                     {editingRecipe.name}
                   </h3>
                   <p className="mb-3 whitespace-pre-wrap">
-                    {editingRecipe.description}
+                    <Linkify options={options}>
+                      {editingRecipe.description}
+                    </Linkify>
                   </p>
                 </div>
               )}

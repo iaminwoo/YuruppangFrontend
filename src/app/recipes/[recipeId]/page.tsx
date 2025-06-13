@@ -3,6 +3,7 @@
 import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Linkify from "linkify-react";
 
 interface IngredientDetail {
   ingredientId: number;
@@ -42,6 +43,12 @@ export default function RecipeDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  const options = {
+    defaultProtocol: "https",
+    target: "_blank",
+    className: "text-blue-800 underline hover:text-blue-400",
+  };
 
   useEffect(() => {
     if (!recipeId) return;
@@ -141,7 +148,9 @@ export default function RecipeDetailPage() {
               </span>
             </div>
 
-            <p className="text-md text-[#6D4C41] mb-6">{recipe.description}</p>
+            <p className="text-md whitespace-pre-wrap text-[#6D4C41] mb-6">
+              <Linkify options={options}>{recipe.description}</Linkify>
+            </p>
 
             <p className="text-right text-gray-600 mb-1">
               <span className="text-gray-700 font-bold">완성 수량 : </span>

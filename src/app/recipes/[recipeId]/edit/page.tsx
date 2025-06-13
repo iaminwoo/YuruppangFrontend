@@ -403,7 +403,7 @@ export default function RecipeEditPage() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            className="w-full rounded border border-gray-300 p-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
+            className="w-full whitespace-pre-wrap rounded border border-gray-300 p-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
           />
         </div>
 

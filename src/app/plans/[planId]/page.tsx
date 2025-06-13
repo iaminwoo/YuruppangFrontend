@@ -571,6 +571,12 @@ export default function PlanDetailPage() {
       <div className="bg-[#FFFDF8] min-h-screen font-sans text-sm">
         <Navbar />
         <main className="p-3 sm:p-6 max-w-5xl mx-auto space-y-10">
+          <button
+            onClick={() => router.push("/plans")}
+            className="text-[#FFEED9] bg-[#8D5F45] hover:bg-[#4E342E] font-bold text-base md:text-sm px-5 py-2 rounded-xl"
+          >
+            목록으로 돌아가기
+          </button>
           {/* 1. 플랜 이름 */}
           <section>
             <h2 className="text-xl sm:text-3xl font-extrabold text-gray-800">
@@ -851,61 +857,80 @@ export default function PlanDetailPage() {
                             {/* 기본 수량 */}
                             {plan.isComplete ? (
                               <div className="flex-2 min-w-0 flex items-center justify-center text-center text-gray-600">
-                                {ing.customizedQuantity.toLocaleString()}{" "}
-                                {ing.unit}
+                                {ing.customizedQuantity.toLocaleString()} g
+                                {ing.unit !== "g" && ` (${ing.unit})`}
                               </div>
                             ) : (
                               <div className="flex-2 min-w-0 flex items-center justify-center text-center text-gray-600">
-                                {ing.originalQuantity > 0
-                                  ? `${ing.originalQuantity.toLocaleString()} ${
-                                      ing.unit
-                                    }`
-                                  : "-"}
+                                {ing.originalQuantity > 0 ? (
+                                  <>
+                                    {ing.originalQuantity.toLocaleString()} g
+                                    {ing.unit !== "g" && ` (${ing.unit})`}
+                                  </>
+                                ) : (
+                                  "-"
+                                )}
                               </div>
                             )}
 
                             {/* 필요량 + 단위 */}
                             {!plan.isComplete && (
                               <div className="flex-3 min-w-0 flex items-center gap-1">
-                                <input
-                                  type="number"
-                                  className="w-full text-center bg-transparent border-b border-gray-300 focus:outline-none"
-                                  value={ing.customizedQuantity}
-                                  onChange={(e) =>
-                                    handleIngredientChange(
-                                      pIdx,
-                                      iIdx,
-                                      "customizedQuantity",
-                                      e.target.value
-                                    )
-                                  }
-                                />
-                                <select
-                                  className="border border-gray-300 rounded px-1 py-1"
-                                  value={ing.unit}
-                                  onChange={(e) =>
-                                    handleIngredientChange(
-                                      pIdx,
-                                      iIdx,
-                                      "unit",
-                                      e.target.value
-                                    )
-                                  }
-                                >
-                                  <option value="g">g</option>
-                                  <option value="ml">ml</option>
-                                  <option value="개">개</option>
-                                </select>
+                                <div className="relative w-full">
+                                  <input
+                                    type="number"
+                                    className={`
+                                      w-full
+                                      ${ing.unit !== "g" ? "pr-6" : "pr-0"}
+                                      text-center bg-transparent border-b border-gray-300 focus:outline-none
+                                    `}
+                                    value={ing.customizedQuantity}
+                                    onChange={(e) =>
+                                      handleIngredientChange(
+                                        pIdx,
+                                        iIdx,
+                                        "customizedQuantity",
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                  {ing.unit !== "g" && (
+                                    <span className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                      g
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="inline-flex items-center">
+                                  <span>(</span>
+                                  <select
+                                    className="border border-gray-300 rounded px-1 py-1 mx-1"
+                                    value={ing.unit}
+                                    onChange={(e) =>
+                                      handleIngredientChange(
+                                        pIdx,
+                                        iIdx,
+                                        "unit",
+                                        e.target.value
+                                      )
+                                    }
+                                  >
+                                    <option value="g">g</option>
+                                    <option value="ml">ml</option>
+                                    <option value="개">개</option>
+                                  </select>
+                                  <span>)</span>
+                                </div>
                               </div>
                             )}
 
                             {/* 삭제 */}
                             {!plan.isComplete && (
                               <button
-                                className="w-12 pl-1 text-center text-red-500 font-semibold"
+                                className="w-6 pl-1 text-center text-xl text-red-500 font-semibold"
                                 onClick={() => removeIngredient(pIdx, iIdx)}
                               >
-                                삭제
+                                &times;
                               </button>
                             )}
                           </div>

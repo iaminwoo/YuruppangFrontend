@@ -12,6 +12,14 @@ interface RecipeItem {
   favorite: boolean;
 }
 
+interface BakingPlan {
+  planId: number;
+  planName: string;
+  recipeNames: string[];
+  recipeCount: number;
+  isComplete: boolean;
+}
+
 interface ApiResponse {
   resultCode: string;
   msg: string;
@@ -35,26 +43,36 @@ export default function RecipePage() {
   const [error, setError] = useState<string | null>(null);
   // ───────────────────────────────────────────────
 
+  const [plans, setPlans] = useState<BakingPlan[]>([]);
+
   useEffect(() => {
-    // 컴포넌트가 마운트될 때 최신 5개 레시피를 가져온다
     const fetchLatest = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        // 백엔드가 로컬에서 8080 포트로 동작 중이라고 가정
-        const res = await fetch(
-          `${apiUrl}/api/recipes?page=0&size=5&sortBy=id`
-        );
-        if (!res.ok) {
-          throw new Error(`네트워크 응답 오류: ${res.status}`);
+        const [recipeRes, planRes] = await Promise.all([
+          fetch(`${apiUrl}/api/recipes?page=0&size=5&sortBy=id`),
+          fetch(`${apiUrl}/api/plans?page=0&size=5&sortBy=id`),
+        ]);
+
+        if (!recipeRes.ok || !planRes.ok) {
+          throw new Error("네트워크 응답 오류");
         }
 
-        const data: ApiResponse = await res.json();
-        if (data.resultCode === "OK") {
-          setRecipes(data.data.content);
+        const recipeData: ApiResponse = await recipeRes.json();
+        const planData = await planRes.json(); // 여긴 별도 타입 안 쓰면 any로 받아도 됨
+
+        if (recipeData.resultCode === "OK") {
+          setRecipes(recipeData.data.content);
         } else {
-          setError(data.msg || "API 에러가 발생했습니다.");
+          setError(recipeData.msg || "레시피 API 에러");
+        }
+
+        if (planData.resultCode === "OK") {
+          setPlans(planData.data.content);
+        } else {
+          setError(planData.msg || "플랜 API 에러");
         }
       } catch (err) {
         setError((err as Error).message);
@@ -153,8 +171,55 @@ export default function RecipePage() {
           </Button>
         </div>
 
-        <div className="w-full text-sm h-32 bg-[#FFEED9] rounded-xl flex items-center justify-center text-[#A97155]">
-          <span>베이킹 플랜이 여기에 표시됩니다 (최신 5개)</span>
+        <div className="w-full text-sm bg-[#FFEED9] rounded-xl p-4 items-center justify-center text-[#A97155]">
+          <h3 className="text-base font-semibold text-[#4E342E] mb-3">
+            최근 등록된 베이킹 플랜
+          </h3>
+
+          {loading && (
+            <div className="text-center text-[#A97155] py-6">로딩중...</div>
+          )}
+
+          {error && (
+            <div className="text-center text-red-500 py-6">
+              에러 발생: {error}
+            </div>
+          )}
+
+          {!loading && !error && plans.length === 0 && (
+            <div className="text-center text-gray-700 py-6">
+              최근 등록한 베이킹 플랜이 여기 표시됩니다.
+            </div>
+          )}
+
+          {!loading && !error && plans.length > 0 && (
+            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {plans.map((plan) => (
+                <li
+                  key={plan.planId}
+                  className="p-3 bg-white rounded-lg shadow-sm hover:bg-[#F9F5F1] cursor-pointer space-y-1"
+                  onClick={() => router.push(`/plans/${plan.planId}`)}
+                >
+                  <div className="text-base font-bold text-[#4E342E]">
+                    {plan.planName}
+                  </div>
+                  <div className="text-sm text-[#6D4C41]">
+                    {plan.recipeNames.join(", ")}
+                  </div>
+                  <div className="text-xs text-[#8D6E63]">
+                    레시피 수: {plan.recipeCount} /{" "}
+                    <span
+                      className={
+                        plan.isComplete ? "text-green-600" : "text-red-500"
+                      }
+                    >
+                      {plan.isComplete ? "완료" : "미완료"}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </main>
     </div>

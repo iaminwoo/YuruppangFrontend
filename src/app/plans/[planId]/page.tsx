@@ -1050,14 +1050,16 @@ export default function PlanDetailPage() {
                     </div>
                   ))}
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={addPart}
-                    type="button"
-                  >
-                    + 파트 추가
-                  </Button>
+                  {!plan.isComplete && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={addPart}
+                      type="button"
+                    >
+                      + 파트 추가
+                    </Button>
+                  )}
 
                   {/* 저장하기 */}
                   {!plan.isComplete && (

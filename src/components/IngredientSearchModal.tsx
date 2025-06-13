@@ -34,6 +34,8 @@ export default function IngredientSearchModal({
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   // ──────────────────────────────────────────────────
   // 2) 검색 디바운스 로직
   // ──────────────────────────────────────────────────
@@ -80,6 +82,10 @@ export default function IngredientSearchModal({
       setKeyword(initialKeyword);
       setSearchResults([]);
       setSearchError(null);
+      setTimeout(() => {
+        inputRef.current?.focus();
+        inputRef.current?.select();
+      }, 0);
     }
   }, [isOpen, initialKeyword]);
 
@@ -130,11 +136,13 @@ export default function IngredientSearchModal({
         {/* 검색 인풋 */}
         <div className="flex items-center gap-2 mb-4">
           <input
+            ref={inputRef}
             type="text"
             placeholder="재료명을 입력하세요"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             className="flex-1 border border-gray-300 rounded-md px-2 py-1"
+            autoFocus={false}
           />
           <Button variant="ghost" size="sm" onClick={onClose}>
             닫기

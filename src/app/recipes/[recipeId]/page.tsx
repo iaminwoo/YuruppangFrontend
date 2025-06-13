@@ -193,10 +193,10 @@ export default function RecipeDetailPage() {
                         {item.ingredientName}
                       </div>
                       <div className="text-center text-[#4E342E] min-w-[80px]">
-                        {item.requiredQuantity.toLocaleString()} {item.unit}
+                        {item.requiredQuantity.toLocaleString()} g
                       </div>
                       <div className="text-center text-[#4E342E] min-w-[80px]">
-                        {item.stockQuantity.toLocaleString()} {item.unit}
+                        {item.stockQuantity.toLocaleString()} g
                       </div>
                     </div>
                   ))}

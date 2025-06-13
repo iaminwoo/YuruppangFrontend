@@ -382,8 +382,22 @@ export default function PlanDetailPage() {
 
   const removeIngredient = (partIndex: number, ingIndex: number) => {
     if (!editingRecipe) return;
+
     const parts = [...editingRecipe.comparedParts];
-    parts[partIndex].comparedIngredients.splice(ingIndex, 1);
+    const ingredientList = parts[partIndex].comparedIngredients;
+
+    // 재료가 하나뿐이면 삭제 불가
+    if (ingredientList.length === 1) {
+      alert("각 파트에는 최소 1개의 재료가 필요합니다.");
+      return;
+    }
+
+    const confirmed = confirm(
+      "이 재료를 삭제하시겠습니까?\n삭제하면 복구할 수 없습니다."
+    );
+    if (!confirmed) return;
+
+    ingredientList.splice(ingIndex, 1);
     setEditingRecipe({ ...editingRecipe, comparedParts: parts });
   };
 
@@ -453,6 +467,61 @@ export default function PlanDetailPage() {
     } catch {
       toast.error("네트워크 오류");
     }
+  };
+
+  const addPart = () => {
+    if (!editingRecipe) return;
+    const updatedParts = [...editingRecipe.comparedParts];
+    updatedParts.push({
+      partName: "",
+      percent: 100,
+      comparedIngredients: [
+        {
+          ingredientId: Date.now(), // 임시 ID
+          ingredientName: "",
+          unit: "g",
+          originalQuantity: 0,
+          customizedQuantity: "",
+        },
+      ],
+    });
+    setEditingRecipe({ ...editingRecipe, comparedParts: updatedParts });
+  };
+
+  const removePart = (partIndex: number) => {
+    if (!editingRecipe) return;
+
+    const updatedParts = [...editingRecipe.comparedParts];
+    const part = updatedParts[partIndex];
+
+    // 마지막 하나는 삭제 안 되게 처리
+    if (updatedParts.length === 1) {
+      alert("최소 1개의 파트는 존재해야 합니다.");
+      return;
+    }
+
+    // 재료가 하나라도 있고, 그 중 이름이 입력된 것이 있다면 confirm
+    const hasNamedIngredient = part.comparedIngredients.some(
+      (ing) => ing.ingredientName.trim() !== ""
+    );
+
+    if (hasNamedIngredient) {
+      const confirmed = confirm(
+        "이 파트에는 재료가 포함되어 있습니다.\n\n삭제하면 재료도 함께 사라집니다.\n\n정말 삭제하시겠습니까?"
+      );
+      if (!confirmed) return;
+    }
+
+    // 빈 파트거나, 확인 완료되었으면 삭제
+    updatedParts.splice(partIndex, 1);
+    setEditingRecipe({ ...editingRecipe, comparedParts: updatedParts });
+  };
+
+  const handlePartNameChange = (partIndex: number, newName: string) => {
+    if (!editingRecipe) return;
+    const updatedParts = [...editingRecipe.comparedParts];
+    updatedParts[partIndex].partName = newName;
+    setEditingRecipe({ ...editingRecipe, comparedParts: updatedParts });
   };
 
   // ──────────────────────────────────────────────────────────────────────────────
@@ -789,16 +858,45 @@ export default function PlanDetailPage() {
                 <div className="space-y-6">
                   {editingRecipe.comparedParts.map((part, pIdx) => (
                     <div key={pIdx}>
-                      <div className="flex gap-2 items-end">
-                        {part.partName !== "기본" && (
-                          <h5 className="font-semibold mb-2">
-                            {part.partName}
-                          </h5>
-                        )}
-
-                        <div className="mb-2 text-gray-400">
-                          파트 배율 : {part.percent} %
+                      <div className="flex gap-6 items-end justify-between mb-2">
+                        <div className="flex-grow flex flex-col">
+                          {!plan.isComplete ? (
+                            <div>
+                              <input
+                                type="text"
+                                value={part.partName}
+                                placeholder="파트명을 입력하세요"
+                                onChange={(e) =>
+                                  handlePartNameChange(pIdx, e.target.value)
+                                }
+                                className="border w-full rounded-lg border-gray-200 px-2 py-1 text-lg font-semibold"
+                              />
+                            </div>
+                          ) : (
+                            <>
+                              {part.partName !== "기본" && (
+                                <h5 className="text-lg font-semibold">
+                                  {part.partName}
+                                </h5>
+                              )}
+                            </>
+                          )}
+                          <div className="text-gray-400">
+                            파트 배율 : {part.percent} %
+                          </div>
                         </div>
+
+                        {editingRecipe.comparedParts.length > 1 &&
+                          !plan.isComplete && (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removePart(pIdx)}
+                              type="button"
+                            >
+                              파트 삭제
+                            </Button>
+                          )}
                       </div>
 
                       {plan.isComplete ? (
@@ -951,6 +1049,16 @@ export default function PlanDetailPage() {
                       </div>
                     </div>
                   ))}
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={addPart}
+                    type="button"
+                  >
+                    + 파트 추가
+                  </Button>
+
                   {/* 저장하기 */}
                   {!plan.isComplete && (
                     <Button
@@ -970,7 +1078,7 @@ export default function PlanDetailPage() {
             <h2 className="text-xl font-extrabold mb-3">메모</h2>
             <div className="bg-white py-6 px-4 rounded-xl shadow">
               <textarea
-                className="w-full h-40 p-3 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className="w-full h-120 sm:h-80 p-3 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
                 value={memo}
                 onChange={(e) => setMemo(e.target.value)}
                 placeholder="메모를 입력하세요."

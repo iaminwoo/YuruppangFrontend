@@ -90,19 +90,19 @@ export default function StockPage() {
         <h2 className="text-xl font-bold text-[#4E342E] mb-4">재고 관리</h2>
         <div className="flex gap-4">
           <Button
-            className="flex-1 bg-[#D7B49E] text-white py-6 text-lg rounded-xl"
+            className="flex-1 bg-[#D7B49E] text-white py-6 rounded-xl"
             onClick={() => router.push("/records")}
           >
             기록 확인
           </Button>
           <Button
-            className="flex-1 bg-[#C89F84] text-white py-6 text-lg rounded-xl"
+            className="flex-1 bg-[#C89F84] text-white py-6 rounded-xl"
             onClick={() => router.push("/records/purchase")}
           >
             구매 기록
           </Button>
           <Button
-            className="flex-1 bg-[#B9896D] text-white py-6 text-lg rounded-xl"
+            className="flex-1 bg-[#B9896D] text-white py-6 rounded-xl"
             onClick={() => router.push("/records/use")}
           >
             소비 기록

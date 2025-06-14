@@ -52,8 +52,8 @@ export default function RecipePage() {
 
       try {
         const [recipeRes, planRes] = await Promise.all([
-          fetch(`${apiUrl}/api/recipes?page=0&size=5&sortBy=id`),
-          fetch(`${apiUrl}/api/plans?page=0&size=5&sortBy=id`),
+          fetch(`${apiUrl}/api/recipes?page=0&size=6&sortBy=id`),
+          fetch(`${apiUrl}/api/plans?page=0&size=6&sortBy=id`),
         ]);
 
         if (!recipeRes.ok || !planRes.ok) {

@@ -7,8 +7,11 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "유루빵 | 제과제빵 관리 서비스",
   description: "유루디아를 위한 제과제빵 웹 서비스",
+  manifest: "/manifest.json",
+  themeColor: "#ffffff",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icons/icon-192x192.png",
+    apple: "/icons/icon-192x192.png",
   },
 };
 

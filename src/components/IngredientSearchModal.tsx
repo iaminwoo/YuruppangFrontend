@@ -1,8 +1,7 @@
-// components/IngredientSearchModal.tsx
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Button } from "@/components/ui/button"; // 기존 버튼 컴포넌트 사용
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 interface IngredientSearchModalProps {
@@ -23,60 +22,71 @@ export default function IngredientSearchModal({
   onSelect,
   initialKeyword = "",
 }: IngredientSearchModalProps) {
-  // ──────────────────────────────────────────────────
-  // 1) State 선언
-  // ──────────────────────────────────────────────────
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  // 입력값과 실제 검색어 분리
   const [keyword, setKeyword] = useState(initialKeyword);
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<{ name: string }[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // ──────────────────────────────────────────────────
-  // 2) 검색 디바운스 로직
-  // ──────────────────────────────────────────────────
-  useEffect(() => {
+  // 사용자가 입력할 때만 keyword 업데이트하고 디바운스 후 searchTerm 설정
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setKeyword(val);
+
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
-    if (!keyword.trim()) {
+    debounceRef.current = setTimeout(() => {
+      setSearchTerm(val.trim());
+    }, 300);
+  };
+
+  // searchTerm이 바뀔 때만 실제 검색 수행
+  useEffect(() => {
+    if (!searchTerm) {
       setSearchResults([]);
       return;
     }
-    setIsSearching(true);
-    setSearchError(null);
 
-    const timer = setTimeout(async () => {
+    let canceled = false;
+    (async () => {
+      setIsSearching(true);
+      setSearchError(null);
       try {
         const res = await fetch(
-          `${apiUrl}/api/ingredients?keyword=${encodeURIComponent(
-            keyword.trim()
-          )}`
+          `${apiUrl}/api/ingredients?keyword=${encodeURIComponent(searchTerm)}`
         );
         if (!res.ok) throw new Error(`검색 실패: ${res.status}`);
         const json = await res.json();
-        const list: { name: string }[] = (json.data?.ingredients || []).map(
-          (ing: Ingredient) => ({ name: ing.ingredientName })
-        );
-        setSearchResults(list);
+        if (!canceled) {
+          const list: { name: string }[] = (json.data?.ingredients || []).map(
+            (ing: Ingredient) => ({ name: ing.ingredientName })
+          );
+          setSearchResults(list);
+        }
       } catch (err) {
-        setSearchError((err as Error).message);
+        if (!canceled) {
+          setSearchError((err as Error).message);
+        }
       } finally {
-        setIsSearching(false);
+        if (!canceled) {
+          setIsSearching(false);
+        }
       }
-    }, 300);
+    })();
 
-    debounceRef.current = timer;
-    return () => clearTimeout(timer);
-  }, [keyword]);
+    return () => {
+      canceled = true;
+    };
+  }, [searchTerm]);
 
-  // ──────────────────────────────────────────────────
-  // 3) 모달이 열릴 때 키워드 초기화 (옵션)
-  // ──────────────────────────────────────────────────
+  // 모달 열릴 때 초기화 (searchTerm은 초기화하지 않아 불필요한 호출 방지)
   useEffect(() => {
     if (isOpen) {
       setKeyword(initialKeyword);
@@ -89,29 +99,19 @@ export default function IngredientSearchModal({
     }
   }, [isOpen, initialKeyword]);
 
-  // ──────────────────────────────────────────────────
-  // 4) ESC 누르면 모달 닫기
-  // ──────────────────────────────────────────────────
+  // ESC로 닫기
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
+      if (e.key === "Escape") onClose();
     };
     if (isOpen) document.addEventListener("keydown", handleKeydown);
-    return () => {
-      document.removeEventListener("keydown", handleKeydown);
-    };
+    return () => document.removeEventListener("keydown", handleKeydown);
   }, [isOpen, onClose]);
 
-  // ──────────────────────────────────────────────────
-  // 5) 모달 외부 클릭 시 닫기
-  // ──────────────────────────────────────────────────
+  // 외부 클릭 닫기
   const overlayRef = useRef<HTMLDivElement>(null);
   const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === overlayRef.current) {
-      onClose();
-    }
+    if (e.target === overlayRef.current) onClose();
   };
 
   if (!isOpen) return null;
@@ -125,31 +125,29 @@ export default function IngredientSearchModal({
       <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4 shadow-lg relative">
         <h2 className="text-xl font-semibold mb-4">재료 검색</h2>
 
-        {/* 닫기 버튼 */}
         <button
+          type="button"
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
         >
           ✕
         </button>
 
-        {/* 검색 인풋 */}
         <div className="flex items-center gap-2 mb-4">
           <input
             ref={inputRef}
             type="text"
             placeholder="재료명을 입력하세요"
             value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={handleInput}
             className="flex-1 border border-gray-300 rounded-md px-2 py-1"
             autoFocus={false}
           />
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button type="button" variant="ghost" size="sm" onClick={onClose}>
             닫기
           </Button>
         </div>
 
-        {/* 검색 상태/에러/결과 */}
         {isSearching && <p className="text-center text-gray-600">검색 중…</p>}
         {searchError && (
           <p className="text-center text-red-500">{searchError}</p>
@@ -161,22 +159,23 @@ export default function IngredientSearchModal({
               <p className="text-gray-500 text-center">검색 결과가 없습니다.</p>
             ) : (
               searchResults.map((ing, idx) => (
-                <li
-                  key={idx}
-                  className="flex justify-between items-center p-2 bg-gray-100 rounded hover:bg-gray-200 cursor-pointer"
-                  onClick={() => {
-                    onSelect(ing.name);
-                    onClose();
-                  }}
-                >
-                  <span className="text-gray-800">{ing.name}</span>
+                <li key={idx}>
+                  <button
+                    type="button"
+                    className="flex justify-between items-center p-2 bg-gray-100 rounded hover:bg-gray-200 w-full text-left"
+                    onClick={() => {
+                      onSelect(ing.name);
+                      onClose();
+                    }}
+                  >
+                    <span className="text-gray-800">{ing.name}</span>
+                  </button>
                 </li>
               ))
             )}
           </ul>
         )}
 
-        {/* 검색 결과가 없을 때에도 현재 키워드를 선택 옵션으로 제공 */}
         {!isSearching && (
           <div className="mt-2">
             <Button

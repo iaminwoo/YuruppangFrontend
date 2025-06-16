@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
+import AutoResizeTextarea from "@/components/AutoResizeTextarea";
 
 interface Ingredient {
   ingredientName: string;
@@ -315,11 +316,9 @@ export default function RecipeForm() {
           <label className="block font-semibold mb-1 text-[#4E342E]">
             설명
           </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="border border-gray-300 p-2 w-full rounded-md"
-            placeholder="레시피 설명"
+          <AutoResizeTextarea
+            description={description}
+            setDescription={setDescription}
           />
         </div>
 

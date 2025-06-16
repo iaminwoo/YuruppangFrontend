@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
+import RecipeDescription from "@/components/RecipeDescription";
 import Linkify from "linkify-react";
 
 interface Ingredient {
@@ -768,7 +769,7 @@ export default function PlanDetailPage() {
                   </h3>
                   <p className="mb-3 whitespace-pre-wrap">
                     <Linkify options={options}>
-                      {editingRecipe.description}
+                      {editingRecipe.customDescription}
                     </Linkify>
                   </p>
                 </div>
@@ -777,11 +778,10 @@ export default function PlanDetailPage() {
                   <h3 className="text-xl font-semibold mb-1">
                     {editingRecipe.name}
                   </h3>
-                  <p className="mb-3 whitespace-pre-wrap">
-                    <Linkify options={options}>
-                      {editingRecipe.description}
-                    </Linkify>
-                  </p>
+                  <RecipeDescription
+                    initialDescription={editingRecipe.customDescription}
+                    updateUrl={`${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/description`}
+                  />
                 </div>
               )}
 

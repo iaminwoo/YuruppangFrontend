@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
+import AutoResizeTextarea from "@/components/AutoResizeTextarea";
 
 interface Ingredient {
   ingredientName: string;
@@ -308,10 +309,10 @@ export default function RecipeEditPage() {
   };
 
   return (
-    <div className="bg-[#FFFDF8] min-h-screen font-sans">
+    <div className="bg-[#FFFDF8] min-h-screen font-sans text-sm">
       <Navbar />
       <main className="px-4 py-6 max-w-3xl mx-auto w-full space-y-6">
-        <h2 className="text-2xl font-bold text-[#4E342E] mb-4 mt-2">
+        <h2 className="text-xl font-bold text-[#4E342E] mb-4 mt-2">
           레시피 수정
         </h2>
 
@@ -399,11 +400,9 @@ export default function RecipeEditPage() {
           <label className="block mb-1 font-semibold text-[#4E342E]">
             설명
           </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            className="w-full whitespace-pre-wrap rounded border border-gray-300 p-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
+          <AutoResizeTextarea
+            description={description}
+            setDescription={setDescription}
           />
         </div>
 

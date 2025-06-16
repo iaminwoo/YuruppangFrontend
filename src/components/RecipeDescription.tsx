@@ -15,6 +15,10 @@ export default function RecipeDescription({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    setDescription(initialDescription);
+  }, [initialDescription]);
+
+  useEffect(() => {
     if (isEditing && textareaRef.current) {
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;

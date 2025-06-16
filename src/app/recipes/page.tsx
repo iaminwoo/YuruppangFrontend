@@ -15,6 +15,8 @@ interface RecipeItem {
 interface BakingPlan {
   planId: number;
   planName: string;
+  createdAt: string;
+  completedAt: string;
   recipeNames: string[];
   recipeCount: number;
   isComplete: boolean;
@@ -200,11 +202,17 @@ export default function RecipePage() {
                   className="p-3 bg-white rounded-lg shadow-sm hover:bg-[#F9F5F1] cursor-pointer space-y-1"
                   onClick={() => router.push(`/plans/${plan.planId}`)}
                 >
-                  <div className="text-base font-bold text-[#4E342E]">
-                    {plan.planName}
+                  <div className="font-bold mb-1 text-sm">
+                    포함된 레시피 : <br className="sm:hidden" />
+                    <span className="text-gray-600">
+                      {plan.recipeNames.join(" /  ")}
+                    </span>
                   </div>
-                  <div className="text-sm text-[#6D4C41]">
-                    {plan.recipeNames.join(", ")}
+                  <div className="flex flex-col gap-1 mb-1 text-xs">
+                    <div>플랜 생성일 : {plan.createdAt}</div>
+                    {plan.completedAt && (
+                      <div>플랜 완성일 : {plan.completedAt}</div>
+                    )}
                   </div>
                   <div className="text-xs text-[#8D6E63]">
                     레시피 수: {plan.recipeCount} /{" "}

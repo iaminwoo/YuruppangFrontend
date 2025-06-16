@@ -11,6 +11,7 @@ interface RecipeDetail {
   recipeId: number;
   recipeName: string;
   recipeDescription: string;
+  customRecipeDescription: string;
   isTemp: boolean;
 }
 
@@ -64,7 +65,7 @@ export default function PlanCompletePage() {
           temps.forEach((r) => {
             initMods[r.recipeId] = {
               recipeName: r.recipeName,
-              recipeDescription: r.recipeDescription,
+              recipeDescription: r.customRecipeDescription,
             };
           });
           setModifiedRecipes(initMods);

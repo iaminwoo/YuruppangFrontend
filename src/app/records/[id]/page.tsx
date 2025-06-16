@@ -123,7 +123,7 @@ export default function RecordDetailPage() {
         </div>
         <div className="mt-6 text-center">
           <Button
-            onClick={() => router.back()}
+            onClick={() => router.push("/records")}
             className="bg-[#D7B49E] text-white rounded-xl px-6 py-2"
           >
             목록으로 돌아가기

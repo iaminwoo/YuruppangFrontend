@@ -209,9 +209,10 @@ export default function RecipePage() {
                     </span>
                   </div>
                   <div className="flex flex-col gap-1 mb-1 text-xs">
-                    <div>플랜 생성일 : {plan.createdAt}</div>
-                    {plan.completedAt && (
+                    {plan.completedAt ? (
                       <div>플랜 완성일 : {plan.completedAt}</div>
+                    ) : (
+                      <div>플랜 생성일 : {plan.createdAt}</div>
                     )}
                   </div>
                   <div className="text-xs text-[#8D6E63]">

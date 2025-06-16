@@ -316,8 +316,8 @@ export default function RecipeListPage() {
             <button
               className={`px-3 py-1 rounded-xl font-semibold ${
                 favorite
-                  ? "bg-pink-400 text-white"
-                  : "bg-[#F2E3D5] text-gray-800"
+                  ? "bg-pink-400 hover:bg-pink-500 text-white"
+                  : "bg-[#F2E3D5] hover:bg-[#e5d2c2] text-gray-800"
               }`}
               onClick={() => {
                 setFavorite(!favorite);

@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 interface PlanSimpleResponse {
   planId: number;
   planName: string;
+  createdAt: string;
+  completedAt: string;
   recipeNames: string[];
   recipeCount: number;
   isComplete: boolean;
@@ -92,12 +94,17 @@ export default function YuruppangPlanListPage() {
               className="p-4 bg-[#FFEED9] rounded-xl text-[#A97155] shadow-md cursor-pointer hover:bg-[#FFDFAE] transition"
               title="상세보기"
             >
-              <div className="font-bold mb-1">{plan.planName}</div>
-              <div className="font-bold mb-1">
+              <div className="font-bold mb-1 text-lg">
                 포함된 레시피 : <br className="sm:hidden" />
                 <span className="text-gray-600">
                   {plan.recipeNames.join(" /  ")}
                 </span>
+              </div>
+              <div className="flex flex-col gap-1 mb-1">
+                <div>플랜 생성일 : {plan.createdAt}</div>
+                {plan.completedAt && (
+                  <div>플랜 완성일 : {plan.completedAt}</div>
+                )}
               </div>
               <div className="flex justify-between">
                 <div className="text-gray-600">

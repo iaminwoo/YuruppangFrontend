@@ -143,12 +143,7 @@ export default function RecipeListPage() {
     setAddedRecipes(addedRecipes.filter((r) => r.recipeId !== recipeId));
   };
   const handleProduce = async () => {
-    const today = new Date();
-    const memo = `${today.getFullYear()}년 ${
-      today.getMonth() + 1
-    }월 ${today.getDate()}일 오늘의 베이킹 플랜`;
     const body = {
-      memo,
       recipes: addedRecipes.map((recipe) => recipe.recipeId),
     };
 

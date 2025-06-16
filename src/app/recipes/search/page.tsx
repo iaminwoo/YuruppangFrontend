@@ -359,7 +359,7 @@ export default function RecipeListPage() {
 
               <button
                 onClick={() => toggleFavorite(recipe.recipeId)}
-                className={`ml-3 text-xl bg-transparent hover:text-yellow-500 transition duration-200 relative top-[1px] ${
+                className={`ml-3 text-xl bg-transparent transition duration-200 relative top-[1px] ${
                   recipe.favorite ? "text-pink-400" : "text-gray-400"
                 }`}
                 title={recipe.favorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}

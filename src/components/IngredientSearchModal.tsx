@@ -114,6 +114,13 @@ export default function IngredientSearchModal({
     if (e.target === overlayRef.current) onClose();
   };
 
+  const blacklist = ["계란"];
+  const trimmedKeyword = keyword.trim();
+  const hasExactMatch = searchResults.some(
+    (result) => result.name === trimmedKeyword
+  );
+  const isBlacklisted = blacklist.includes(trimmedKeyword);
+
   if (!isOpen) return null;
 
   return (
@@ -190,6 +197,7 @@ export default function IngredientSearchModal({
                 onClose();
               }}
               className="w-full"
+              disabled={hasExactMatch || isBlacklisted}
             >
               “{keyword.trim()}” 사용하기
             </Button>

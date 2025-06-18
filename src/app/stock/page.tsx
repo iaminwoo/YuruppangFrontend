@@ -113,12 +113,20 @@ export default function StockPage() {
         {/* 제목 + 정리 버튼 */}
         <div className="flex items-center justify-between mb-4 mt-6">
           <h2 className="text-xl font-bold text-[#4E342E]">현재 재고</h2>
-          <Button
-            className="bg-[#A97155] text-white px-4 py-2 rounded-lg text-sm"
-            onClick={handleCleanup}
-          >
-            재고 정리
-          </Button>
+          <div className="flex gap-1">
+            <Button
+              className="bg-[#A97155] text-white px-4 py-2 rounded-lg text-sm"
+              onClick={() => router.push("/stock/break-eggs")}
+            >
+              🥚 달걀 깨기
+            </Button>
+            <Button
+              className="bg-[#A97155] text-white px-4 py-2 rounded-lg text-sm"
+              onClick={handleCleanup}
+            >
+              재고 정리
+            </Button>
+          </div>
         </div>
 
         {/* 재고 데이터 표시 영역 */}

@@ -153,7 +153,7 @@ export default function StockPage() {
                   {item.ingredientName}
                 </div>
                 <div className="text-sm text-center text-[#4E342E] min-w-[60px]">
-                  {parseFloat(item.totalQuantity).toLocaleString()} {item.unit}
+                  {parseFloat(item.totalQuantity).toLocaleString()} g
                 </div>
                 <div className="text-sm text-center text-[#4E342E] min-w-[60px]">
                   {parseFloat(item.unitPrice).toLocaleString()} 원 / {item.unit}

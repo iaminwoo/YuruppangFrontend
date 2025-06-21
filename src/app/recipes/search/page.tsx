@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface RecipeItem {
   recipeId: number;
@@ -50,7 +51,7 @@ export default function RecipeListPage() {
 
   // 카테고리 목록 가져오기 (초기 한 번)
   useEffect(() => {
-    fetch(`${apiUrl}/api/categories`)
+    fetchWithAuth(`${apiUrl}/api/categories`)
       .then((res) => res.json())
       .then((data) => {
         if (data.resultCode === "OK") {
@@ -92,7 +93,7 @@ export default function RecipeListPage() {
       url += `&keyword=${encodeURIComponent(trimmed)}`;
     }
 
-    fetch(url)
+    fetchWithAuth(url)
       .then((res) => {
         if (!res.ok) throw new Error("네트워크 응답 오류");
         return res.json();
@@ -148,7 +149,7 @@ export default function RecipeListPage() {
     };
 
     try {
-      const res = await fetch(`${apiUrl}/api/plans`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/plans`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -168,9 +169,12 @@ export default function RecipeListPage() {
   // 즐겨찾기 토글 로직 (기존)
   const toggleFavorite = async (recipeId: number) => {
     try {
-      const res = await fetch(`${apiUrl}/api/recipes/${recipeId}/favorite`, {
-        method: "PATCH",
-      });
+      const res = await fetchWithAuth(
+        `${apiUrl}/api/recipes/${recipeId}/favorite`,
+        {
+          method: "PATCH",
+        }
+      );
       if (!res.ok) throw new Error("즐겨찾기 변경 실패");
       setRecipes((prev) =>
         prev.map((r) =>

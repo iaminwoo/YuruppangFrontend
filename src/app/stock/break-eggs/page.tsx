@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Image from "next/image";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface EggsResponse {
   eggsCount: number;
@@ -22,7 +23,7 @@ export default function StockPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    fetch(`${apiUrl}/api/ingredients/eggs`)
+    fetchWithAuth(`${apiUrl}/api/ingredients/eggs`)
       .then((res) => res.json())
       .then((data) => {
         setEggs(data.data);
@@ -42,7 +43,7 @@ export default function StockPage() {
 
     setIsLoading(true);
     try {
-      const res = await fetch(`${apiUrl}/api/ingredients/break-eggs`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/ingredients/break-eggs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quantity: qtyNum }),

@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export default function RecordEditPage() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -37,7 +38,7 @@ export default function RecordEditPage() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`${apiUrl}/api/ingredientLogs/${id}`)
+    fetchWithAuth(`${apiUrl}/api/ingredientLogs/${id}`)
       .then((res) => res.json())
       .then((data) => {
         const d = data.data;
@@ -71,7 +72,7 @@ export default function RecordEditPage() {
           ? basePayload
           : { ...basePayload, price: form.price };
 
-      const res = await fetch(`${apiUrl}/api/ingredientLogs/${id}`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/ingredientLogs/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

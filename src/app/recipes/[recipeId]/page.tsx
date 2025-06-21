@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Linkify from "linkify-react";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface IngredientDetail {
   ingredientId: number;
@@ -56,7 +57,7 @@ export default function RecipeDetailPage() {
     setLoading(true);
     setError(null);
 
-    fetch(`${apiUrl}/api/recipes/${recipeId}`)
+    fetchWithAuth(`${apiUrl}/api/recipes/${recipeId}`)
       .then((res) => {
         if (!res.ok) throw new Error("네트워크 오류");
         return res.json();
@@ -77,7 +78,7 @@ export default function RecipeDetailPage() {
 
     setDeleting(true);
     try {
-      const res = await fetch(`${apiUrl}/api/recipes/${recipeId}`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/recipes/${recipeId}`, {
         method: "DELETE",
       });
 

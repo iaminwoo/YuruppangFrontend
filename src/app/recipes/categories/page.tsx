@@ -3,6 +3,7 @@
 import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface Category {
   categoryId: number;
@@ -31,7 +32,7 @@ export default function CategoryManagementPage() {
   >([]);
 
   const fetchCategories = () => {
-    fetch(`${apiUrl}/api/categories`)
+    fetchWithAuth(`${apiUrl}/api/categories`)
       .then((res) => res.json())
       .then((data) => {
         if (data.resultCode === "OK") {
@@ -48,7 +49,7 @@ export default function CategoryManagementPage() {
   const handleEditSave = () => {
     if (!editedName.trim() || !editingCategory) return;
 
-    fetch(`${apiUrl}/api/categories/${editingCategory.categoryId}`, {
+    fetchWithAuth(`${apiUrl}/api/categories/${editingCategory.categoryId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: editedName }),
@@ -72,7 +73,7 @@ export default function CategoryManagementPage() {
   const handleAddCategory = () => {
     if (!newCategoryName.trim()) return;
 
-    fetch(`${apiUrl}/api/categories`, {
+    fetchWithAuth(`${apiUrl}/api/categories`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newCategoryName }),
@@ -90,7 +91,7 @@ export default function CategoryManagementPage() {
 
   const handleDeleteClick = async (category: Category) => {
     // 카테고리 내 레시피 목록을 가져오는 API 호출
-    const res = await fetch(
+    const res = await fetchWithAuth(
       `${apiUrl}/api/categories/${category.categoryId}/recipes`
     );
     const data = await res.json();
@@ -125,7 +126,7 @@ export default function CategoryManagementPage() {
       return;
     }
 
-    fetch(`${apiUrl}/api/categories/${categoryToDelete?.categoryId}`, {
+    fetchWithAuth(`${apiUrl}/api/categories/${categoryToDelete?.categoryId}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ recipes: recipeReassignments }),

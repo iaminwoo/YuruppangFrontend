@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 type Unit = "G" | "ML" | "개";
 
@@ -123,7 +124,7 @@ export default function PurchasePage() {
     };
 
     try {
-      const res = await fetch(`${apiUrl}/api/ingredientLogs/purchase`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/ingredientLogs/purchase`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

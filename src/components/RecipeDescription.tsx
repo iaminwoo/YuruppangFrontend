@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Linkify from "linkify-react";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export default function RecipeDescription({
   initialDescription,
@@ -29,7 +30,7 @@ export default function RecipeDescription({
     setIsSaving(true);
     setError(null);
     try {
-      const res = await fetch(updateUrl, {
+      const res = await fetchWithAuth(updateUrl, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newDescription: description }),

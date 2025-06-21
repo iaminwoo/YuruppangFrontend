@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface PlanSimpleResponse {
   planId: number;
@@ -41,7 +42,7 @@ export default function YuruppangPlanListPage() {
     setLoading(true);
     setError(null);
 
-    fetch(`${apiUrl}/api/plans?page=${pageNumber}`)
+    fetchWithAuth(`${apiUrl}/api/plans?page=${pageNumber}`)
       .then((res) => {
         if (!res.ok) throw new Error("네트워크 오류");
         return res.json();

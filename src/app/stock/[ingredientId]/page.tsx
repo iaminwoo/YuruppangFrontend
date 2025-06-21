@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface IngredientResponse {
   ingredientId: number;
@@ -29,7 +30,7 @@ export default function StockPage() {
   useEffect(() => {
     if (!ingredientId) return;
 
-    fetch(`${apiUrl}/api/ingredients/${ingredientId}`)
+    fetchWithAuth(`${apiUrl}/api/ingredients/${ingredientId}`)
       .then((res) => res.json())
       .then((data) => {
         setIngredient(data.data);
@@ -57,7 +58,7 @@ export default function StockPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(
+      const res = await fetchWithAuth(
         `${apiUrl}/api/ingredients/${ingredientId}/recalculate-quantity`,
         {
           method: "POST",
@@ -101,15 +102,18 @@ export default function StockPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${apiUrl}/api/ingredients/${ingredientId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          newUnit, // 서버에서 IngredientUnit enum의 name(G, ML, EA)을 받아야 하므로 key를 맞춤
-        }),
-      });
+      const res = await fetchWithAuth(
+        `${apiUrl}/api/ingredients/${ingredientId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            newUnit, // 서버에서 IngredientUnit enum의 name(G, ML, EA)을 받아야 하므로 key를 맞춤
+          }),
+        }
+      );
 
       if (!res.ok) {
         throw new Error("서버 오류");

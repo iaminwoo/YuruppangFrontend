@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface RecordItem {
   id: number;
@@ -43,7 +44,7 @@ export default function RecordsPage() {
     setLoading(true);
     setError(null);
 
-    fetch(`${apiUrl}/api/ingredientLogs?page=${pageNumber}`)
+    fetchWithAuth(`${apiUrl}/api/ingredientLogs?page=${pageNumber}`)
       .then((res) => {
         if (!res.ok) throw new Error("네트워크 응답 오류");
         return res.json();

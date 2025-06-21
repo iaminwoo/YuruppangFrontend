@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 // API에서 받아오는 Recipe 타입 정의
 interface RecipeDetail {
@@ -47,7 +48,7 @@ export default function PlanCompletePage() {
   useEffect(() => {
     if (!planId) return;
     setLoading(true);
-    fetch(`${apiUrl}/api/plans/${planId}`)
+    fetchWithAuth(`${apiUrl}/api/plans/${planId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.resultCode === "OK") {
@@ -130,7 +131,7 @@ export default function PlanCompletePage() {
     });
     setSubmitting(true);
     try {
-      const res = await fetch(`${apiUrl}/api/plans/${planId}`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/plans/${planId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipes: recipeDtos }),

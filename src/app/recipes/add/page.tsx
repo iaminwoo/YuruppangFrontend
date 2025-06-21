@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
 import AutoResizeTextarea from "@/components/AutoResizeTextarea";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface Ingredient {
   ingredientName: string;
@@ -61,7 +62,7 @@ export default function RecipeForm() {
 
   // 컴포넌트 마운트 시 카테고리 목록 불러오기
   useEffect(() => {
-    fetch(`${apiUrl}/api/categories`)
+    fetchWithAuth(`${apiUrl}/api/categories`)
       .then((res) => {
         if (!res.ok) throw new Error("카테고리 조회 실패");
         return res.json();
@@ -145,7 +146,7 @@ export default function RecipeForm() {
     }
 
     try {
-      const res = await fetch(`${apiUrl}/api/categories`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/categories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newCategoryName.trim() }),
@@ -231,7 +232,7 @@ export default function RecipeForm() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${apiUrl}/api/recipes`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/recipes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface Ingredient {
   ingredientId: number;
@@ -29,7 +30,7 @@ export default function StockPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${apiUrl}/api/ingredients`)
+    fetchWithAuth(`${apiUrl}/api/ingredients`)
       .then((res) => {
         if (!res.ok) throw new Error("재고 데이터를 불러오지 못했습니다.");
         return res.json();
@@ -50,7 +51,7 @@ export default function StockPage() {
     if (!confirm("사용되지 않는 재료를 정리하시겠습니까?")) return;
 
     try {
-      const res = await fetch(`${apiUrl}/api/ingredients`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/ingredients`, {
         method: "DELETE",
       });
 
@@ -63,7 +64,7 @@ export default function StockPage() {
       setLoading(true);
       setError(null);
 
-      const reloadRes = await fetch(`${apiUrl}/api/ingredients`);
+      const reloadRes = await fetchWithAuth(`${apiUrl}/api/ingredients`);
       const reloadData: ApiResponse = await reloadRes.json();
 
       if (reloadData.resultCode === "OK") {

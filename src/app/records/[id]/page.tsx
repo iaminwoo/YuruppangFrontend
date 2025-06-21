@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface RecordDetail {
   id: number;
@@ -29,7 +30,7 @@ export default function RecordDetailPage() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`${apiUrl}/api/ingredientLogs/${id}`)
+    fetchWithAuth(`${apiUrl}/api/ingredientLogs/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("네트워크 오류");
         return res.json();
@@ -101,7 +102,7 @@ export default function RecordDetailPage() {
               if (!confirmed) return;
 
               try {
-                const res = await fetch(
+                const res = await fetchWithAuth(
                   `${apiUrl}/api/ingredientLogs/${record.id}`,
                   {
                     method: "DELETE",

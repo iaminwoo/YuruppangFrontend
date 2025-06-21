@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
 import RecipeDescription from "@/components/RecipeDescription";
 import Linkify from "linkify-react";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface Ingredient {
   ingredientId: number;
@@ -176,7 +177,7 @@ export default function PlanDetailPage() {
   const fetchPlanDetail = async () => {
     if (!planId) return;
     try {
-      const res = await fetch(`${apiUrl}/api/plans/${planId}`);
+      const res = await fetchWithAuth(`${apiUrl}/api/plans/${planId}`);
       if (!res.ok) throw new Error(`플랜 상세 조회 실패: ${res.status}`);
       const json: ApiResponse<PlanDetailResponse> = await res.json();
       if (json.resultCode !== "OK") {
@@ -256,7 +257,7 @@ export default function PlanDetailPage() {
       const url = `${apiUrl}/api/recipes?page=0&size=10&sortBy=name&keyword=${encodeURIComponent(
         searchKeyword.trim()
       )}`;
-      const res = await fetch(url);
+      const res = await fetchWithAuth(url);
       if (!res.ok) throw new Error(`레시피 검색 실패: ${res.status}`);
       const json: ApiResponse<RecipeSearchResponse> = await res.json();
       if (json.resultCode !== "OK") {
@@ -276,7 +277,7 @@ export default function PlanDetailPage() {
   const handleAddRecipeInModal = async (recipeIdToAdd: number) => {
     if (!planId) return;
     try {
-      const res = await fetch(`${apiUrl}/api/plans/${planId}/recipes`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/plans/${planId}/recipes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipeId: recipeIdToAdd }),
@@ -309,7 +310,7 @@ export default function PlanDetailPage() {
     if (!ok) return;
 
     try {
-      const res = await fetch(
+      const res = await fetchWithAuth(
         `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}`,
         { method: "DELETE" }
       );
@@ -337,7 +338,7 @@ export default function PlanDetailPage() {
       return;
     }
     try {
-      const res = await fetch(
+      const res = await fetchWithAuth(
         `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/output`,
         {
           method: "PATCH",
@@ -424,7 +425,7 @@ export default function PlanDetailPage() {
       }
     }
     try {
-      const res = await fetch(
+      const res = await fetchWithAuth(
         `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/ingredients`,
         {
           method: "PATCH",
@@ -461,7 +462,7 @@ export default function PlanDetailPage() {
     const ok = confirm("기본 레시피로 초기화하시겠습니까?");
     if (!ok) return;
     try {
-      const res = await fetch(
+      const res = await fetchWithAuth(
         `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/reset`,
         { method: "PATCH" }
       );
@@ -538,7 +539,7 @@ export default function PlanDetailPage() {
   const handleMemoSubmit = async () => {
     if (!plan) return;
     try {
-      const res = await fetch(`${apiUrl}/api/plans/${planId}/memo`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/plans/${planId}/memo`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newMemo: memo }),
@@ -564,7 +565,7 @@ export default function PlanDetailPage() {
     );
     if (!confirmed) return;
     try {
-      const res = await fetch(`${apiUrl}/api/plans/${planId}`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/plans/${planId}`, {
         method: "DELETE",
       });
       const data: ApiResponse<string> = await res.json();
@@ -1266,7 +1267,7 @@ export default function PlanDetailPage() {
                     return;
                   }
                   try {
-                    const res = await fetch(
+                    const res = await fetchWithAuth(
                       `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/output/percent`,
                       {
                         method: "PATCH",
@@ -1336,7 +1337,7 @@ export default function PlanDetailPage() {
                         percent: partPercents[idx],
                       })
                     );
-                    const res = await fetch(
+                    const res = await fetchWithAuth(
                       `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/ingredients/percent`,
                       {
                         method: "PATCH",

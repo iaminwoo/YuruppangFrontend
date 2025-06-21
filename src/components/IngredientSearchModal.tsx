@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface IngredientSearchModalProps {
   isOpen: boolean;
@@ -59,7 +60,7 @@ export default function IngredientSearchModal({
       setIsSearching(true);
       setSearchError(null);
       try {
-        const res = await fetch(
+        const res = await fetchWithAuth(
           `${apiUrl}/api/ingredients?keyword=${encodeURIComponent(searchTerm)}`
         );
         if (!res.ok) throw new Error(`검색 실패: ${res.status}`);

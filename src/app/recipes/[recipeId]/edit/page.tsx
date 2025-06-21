@@ -6,6 +6,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
 import AutoResizeTextarea from "@/components/AutoResizeTextarea";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface Ingredient {
   ingredientName: string;
@@ -78,7 +79,7 @@ export default function RecipeEditPage() {
     if (!recipeId) return;
 
     // 1) 레시피 디테일
-    fetch(`${apiUrl}/api/recipes/${recipeId}`)
+    fetchWithAuth(`${apiUrl}/api/recipes/${recipeId}`)
       .then((res) => {
         if (!res.ok) throw new Error("데이터를 불러오는데 실패했습니다.");
         return res.json();
@@ -120,7 +121,7 @@ export default function RecipeEditPage() {
       .catch((e) => setError(e.message));
 
     // 2) 카테고리 목록
-    fetch(`${apiUrl}/api/categories`)
+    fetchWithAuth(`${apiUrl}/api/categories`)
       .then((res) => {
         if (!res.ok) throw new Error("카테고리 조회 실패");
         return res.json();
@@ -214,7 +215,7 @@ export default function RecipeEditPage() {
     }
 
     try {
-      const res = await fetch(`${apiUrl}/api/categories`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/categories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newCategoryName.trim() }),
@@ -282,7 +283,7 @@ export default function RecipeEditPage() {
     };
 
     try {
-      const res = await fetch(`${apiUrl}/api/recipes/${recipeId}`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/recipes/${recipeId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

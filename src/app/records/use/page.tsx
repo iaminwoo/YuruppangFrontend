@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface UsageItem {
   name: string;
@@ -107,7 +108,7 @@ export default function UsagePage() {
     };
 
     try {
-      const res = await fetch(`${apiUrl}/api/ingredientLogs/use`, {
+      const res = await fetchWithAuth(`${apiUrl}/api/ingredientLogs/use`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

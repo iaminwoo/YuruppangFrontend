@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface RecipeItem {
   recipeId: number;
@@ -54,8 +55,8 @@ export default function RecipePage() {
 
       try {
         const [recipeRes, planRes] = await Promise.all([
-          fetch(`${apiUrl}/api/recipes?page=0&size=6&sortBy=id`),
-          fetch(`${apiUrl}/api/plans?page=0&size=6&sortBy=id`),
+          fetchWithAuth(`${apiUrl}/api/recipes?page=0&size=6&sortBy=id`),
+          fetchWithAuth(`${apiUrl}/api/plans?page=0&size=6&sortBy=id`),
         ]);
 
         if (!recipeRes.ok || !planRes.ok) {

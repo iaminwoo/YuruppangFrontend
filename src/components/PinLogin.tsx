@@ -29,6 +29,11 @@ export default function PinLogin() {
     setPin((prev) => prev.slice(0, -1));
   };
 
+  const onClear = () => {
+    if (loading) return;
+    setPin("");
+  };
+
   const onSubmit = async (submittedPin: string) => {
     if (loading) return;
 
@@ -44,8 +49,10 @@ export default function PinLogin() {
       });
 
       if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.msg || "로그인 실패");
+        const errorText = await res.text();
+        setError(errorText);
+        setPin("");
+        return;
       }
 
       const data = await res.json();
@@ -54,6 +61,7 @@ export default function PinLogin() {
     } catch (err) {
       if (err instanceof Error) setError(err.message);
       else setError("알 수 없는 오류가 발생했습니다.");
+      setPin("");
     } finally {
       setLoading(false);
     }
@@ -63,13 +71,13 @@ export default function PinLogin() {
     ["1", "2", "3"],
     ["4", "5", "6"],
     ["7", "8", "9"],
-    ["", "0", "←"],
+    ["CLEAR", "0", "←"],
   ];
 
   return (
     <div className="flex flex-col items-center">
       {/* PIN 표시 */}
-      <div className="flex space-x-2 mb-6">
+      <div className="flex space-x-2 mb-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
@@ -80,7 +88,9 @@ export default function PinLogin() {
         ))}
       </div>
 
-      {error && <div className="mb-4 text-red-600 text-sm">{error}</div>}
+      {error && (
+        <div className="mb-2 text-red-600 text-sm font-semibold">{error}</div>
+      )}
 
       {/* 다이얼 패드 */}
       <div className="grid grid-cols-3 gap-3">
@@ -88,12 +98,21 @@ export default function PinLogin() {
           <button
             key={idx}
             disabled={loading}
-            className={`w-16 h-16 rounded-full text-white bg-[#A97155] hover:bg-[#8D5F45] flex items-center justify-center text-2xl ${
-              d === "" ? "invisible" : ""
-            } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`
+      w-16 h-16 rounded-full text-white flex items-center justify-center
+      ${
+        d === "CLEAR" || d === "←"
+          ? "bg-[#d8a88f] hover:bg-[#ac8876]"
+          : "bg-[#A97155] hover:bg-[#8D5F45]"
+      }
+      text-2xl
+      ${d === "CLEAR" ? "text-sm" : ""}
+      ${loading ? "opacity-50 cursor-not-allowed" : ""}
+    `}
             onClick={() => {
               if (loading) return;
               if (d === "←") onBackspace();
+              else if (d === "CLEAR") onClear();
               else if (d) onDigit(d);
             }}
           >

@@ -20,15 +20,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/login', req.url));
   }
 
-  // 4) 통과하는 경우, 브라우저로 쿠키를 그대로 전달
-  const response = NextResponse.next({
-    // 여기 cookieStore.toString() 은 "name=val; name2=val2" 형태로 자동 변환됩니다
-    headers: {
-      'set-cookie': cookieStore.toString(),
-    },
-  });
-
-  return response;
+  // 4) refreshToken이 있으면 그냥 통과
+  return NextResponse.next();
 }
 
 export const config = {

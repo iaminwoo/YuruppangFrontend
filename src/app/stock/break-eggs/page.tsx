@@ -103,12 +103,12 @@ export default function StockPage() {
               </div>
               <div className="flex justify-between">
                 <span className="flex-3">🟡 노른자 무게</span>
-                {eggs && <span className="flex-2">{eggs.yolksStock}개</span>}
+                {eggs && <span className="flex-2">{eggs.yolksStock}g</span>}
                 <span className="flex-2">18g/1개</span>
               </div>
               <div className="flex justify-between">
                 <span className="flex-3">⚪ 흰자 무게</span>
-                {eggs && <span className="flex-2">{eggs.whitesStock}개</span>}
+                {eggs && <span className="flex-2">{eggs.whitesStock}g</span>}
                 <span className="flex-2">36g/1개</span>
               </div>
             </div>

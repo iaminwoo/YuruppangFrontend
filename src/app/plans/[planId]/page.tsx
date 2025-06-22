@@ -730,27 +730,31 @@ export default function PlanDetailPage() {
             </div>
 
             {/* 레시피 탭 버튼들 */}
-            <div className="mb-3 flex flex-wrap gap-2">
-              {plan.recipeDetails.map((recipe, idx) => (
-                <Button
-                  key={recipe.recipeId}
-                  onClick={() => setSelectedRecipeIndex(idx)}
-                  className={`rounded-full px-4 py-2 font-semibold transition ${
-                    idx === selectedRecipeIndex
-                      ? "bg-[#A97155] text-white"
-                      : "bg-[#EAD9C4] text-[#7C6E65]"
-                  }`}
-                >
-                  {recipe.name}
-                </Button>
-              ))}
+            <div className="mb-3 grid grid-cols-3 gap-2">
+              {plan.recipeDetails.map((recipe, idx) => {
+                const isSelected = idx === selectedRecipeIndex;
+                return (
+                  <Button
+                    key={recipe.recipeId}
+                    onClick={() => setSelectedRecipeIndex(idx)}
+                    className={[
+                      "block w-full min-w-0 truncate text-center rounded-lg px-2 py-2 font-semibold transition",
+                      isSelected
+                        ? "bg-[#A97155] text-white"
+                        : "bg-[#EAD9C4] text-[#7C6E65]",
+                    ].join(" ")}
+                  >
+                    {recipe.name}
+                  </Button>
+                );
+              })}
             </div>
 
             {/* 4. 선택된 레시피 상세 카드 */}
-            <div className="bg-white rounded-xl px-3 py-6 shadow space-y-2 relative">
+            <div className="bg-white rounded-xl px-3 pt-3 pb-6 shadow space-y-2 relative">
               {/* RESET / 제외 버튼 영역 */}
               {!plan.isComplete && (
-                <div className="absolute top-4 right-4 flex gap-2">
+                <div className="flex justify-end gap-2">
                   <Button
                     onClick={handleReset}
                     className="px-3 py-1 text-xs rounded-md hover:text-red-500"

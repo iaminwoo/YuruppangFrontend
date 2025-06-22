@@ -1101,7 +1101,7 @@ export default function PlanDetailPage() {
             <h2 className="text-xl font-extrabold mb-3">메모</h2>
             <div className="bg-white py-6 px-4 rounded-xl shadow">
               <textarea
-                className="w-full h-120 sm:h-80 p-3 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className="w-full h-60 sm:h-80 p-3 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
                 value={memo}
                 onChange={(e) => setMemo(e.target.value)}
                 placeholder="메모를 입력하세요."

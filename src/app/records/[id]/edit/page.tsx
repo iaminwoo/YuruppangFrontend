@@ -95,7 +95,7 @@ export default function RecordEditPage() {
 
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans">
-      <Navbar />
+      <Navbar pageTitle="기록 수정 페이지" />
       <main className="px-4 py-6 max-w-xl mx-auto space-y-6">
         <h2 className="text-2xl font-bold text-[#4E342E] mb-4 mt-2">
           기록 수정

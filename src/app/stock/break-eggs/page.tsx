@@ -66,7 +66,7 @@ export default function StockPage() {
 
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans">
-      <Navbar />
+      <Navbar pageTitle="달걀 깨기 페이지" />
       <main className="px-4 py-6 max-w-3xl mx-auto w-full space-y-4">
         <button
           onClick={() => router.push("/stock")}

@@ -133,7 +133,8 @@ export default function StockPage() {
 
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans">
-      <Navbar />
+      <Navbar pageTitle={`${ingredient?.name ?? "재료"} 세부 페이지`} />
+
       <div className="px-4 py-6 max-w-4xl mx-auto w-full space-y-4">
         <h2 className="text-xl font-bold text-[#4E342E] mb-4 mt-2">
           재료 디테일

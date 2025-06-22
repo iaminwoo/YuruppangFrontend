@@ -85,7 +85,7 @@ export default function StockPage() {
 
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans">
-      <Navbar />
+      <Navbar pageTitle="재고관리 메인 페이지" />
       <main className="px-4 py-6 max-w-4xl mx-auto w-full space-y-4">
         {/* 버튼 영역 */}
         <h2 className="text-xl font-bold text-[#4E342E] mb-4">재고 관리</h2>

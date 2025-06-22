@@ -76,7 +76,7 @@ export default function RecordsPage() {
 
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans flex flex-col">
-      <Navbar />
+      <Navbar pageTitle="기록 확인 페이지" />
 
       <main className="px-4 py-6 max-w-3xl mx-auto w-full flex-grow">
         <h2 className="text-xl font-bold text-[#4E342E] mb-4">기록 확인</h2>

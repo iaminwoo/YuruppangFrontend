@@ -647,7 +647,12 @@ export default function PlanDetailPage() {
   return (
     <>
       <div className="bg-[#FFFDF8] min-h-screen font-sans text-sm">
-        <Navbar />
+        {plan.isComplete ? (
+          <Navbar pageTitle={`베이킹플랜/${editingRecipe.customName}`} />
+        ) : (
+          <Navbar pageTitle={`베이킹플랜/${editingRecipe.name}`} />
+        )}
+
         <main className="p-3 sm:p-6 max-w-5xl mx-auto space-y-10">
           <button
             onClick={() => router.push("/plans")}

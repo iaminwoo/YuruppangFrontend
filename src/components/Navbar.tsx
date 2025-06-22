@@ -6,10 +6,16 @@ import { useUserStore } from "@/store/user";
 import { Button } from "@/components/ui/button";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
-export default function Navbar() {
+type NavbarProps = {
+  pageTitle?: string;
+};
+
+export default function Navbar({ pageTitle }: NavbarProps) {
   const router = useRouter();
+
   const user = useUserStore((state) => state.user);
   const clearUser = useUserStore((state) => state.clearUser);
+
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const handleLogout = async () => {
@@ -81,12 +87,12 @@ export default function Navbar() {
           </div>
         )}
 
-        <Button
-          onClick={handleLogout}
-          className="bg-[#8D5F45] hover:bg-[#4E342E] text-[#FFEED9] text-sm px-3 rounded-lg font-bold h-7"
+        <div
+          className="bg-[#FFFDF8] text-[#4E342E] text-xs font-semibold px-3 py-1 rounded-lg
+        overflow-hidden whitespace-nowrap text-ellipsis max-w-1/2"
         >
-          로그아웃
-        </Button>
+          {pageTitle ? pageTitle : "현재 페이지 위치"}
+        </div>
       </div>
     </nav>
   );

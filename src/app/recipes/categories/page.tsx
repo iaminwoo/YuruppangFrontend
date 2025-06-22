@@ -146,7 +146,7 @@ export default function CategoryManagementPage() {
 
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans">
-      <Navbar />
+      <Navbar pageTitle="카테고리 관리 페이지" />
       <main className="px-4 py-6 max-w-4xl mx-auto w-full space-y-6">
         <h2 className="text-2xl font-bold text-[#4E342E] mb-4">
           카테고리 관리

@@ -194,7 +194,7 @@ export default function RecipeListPage() {
 
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans flex flex-col">
-      <Navbar />
+      <Navbar pageTitle="레시피 검색 페이지" />
 
       <main className="px-4 py-6 max-w-3xl mx-auto w-full flex-grow">
         {/* 로딩 / 에러 표시 */}

@@ -102,7 +102,7 @@ export default function RecipeDetailPage() {
 
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans flex flex-col text-sm">
-      <Navbar />
+      <Navbar pageTitle={`레시피 : ${recipe?.name ?? ""}`} />
 
       <main className="px-4 py-6 max-w-3xl mx-auto w-full flex-grow">
         {/* 상단 버튼 바 */}

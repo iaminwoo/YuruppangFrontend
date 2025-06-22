@@ -157,7 +157,7 @@ export default function PlanCompletePage() {
 
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans">
-      <Navbar />
+      <Navbar pageTitle="베이킹플랜 완성 페이지" />
       <main className="p-6 max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-[#4E342E] mb-4">
           플랜 완료 페이지

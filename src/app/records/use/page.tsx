@@ -136,7 +136,7 @@ export default function UsagePage() {
 
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans">
-      <Navbar />
+      <Navbar pageTitle="기록 추가 페이지" />
       <main className="px-4 py-6 max-w-3xl mx-auto w-full space-y-4">
         <h2 className="text-xl font-bold text-[#4E342E] mb-4 mt-2">
           소비 기록 추가

@@ -13,10 +13,10 @@ export async function middleware(req: NextRequest) {
 
   // 2) 쿠키스토어에서 accessToken 꺼내기
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken')?.value;
+  const refreshToken = cookieStore.get('refreshToken')?.value;
 
   // 3) 토큰 없으면 로그인으로
-  if (!accessToken) {
+  if (!refreshToken) {
     return NextResponse.redirect(new URL('/login', req.url));
   }
 

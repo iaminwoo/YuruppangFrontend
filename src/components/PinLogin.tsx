@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { useUserStore } from "@/store/user";
 
 export default function PinLogin() {
   const [pin, setPin] = useState<string>("");
@@ -56,7 +57,11 @@ export default function PinLogin() {
       }
 
       const data = await res.json();
-      console.log("로그인 성공:", data);
+
+      useUserStore
+        .getState()
+        .setUser({ userId: data.data.userId, username: data.data.username });
+
       router.push("/");
     } catch (err) {
       if (err instanceof Error) setError(err.message);

@@ -29,7 +29,7 @@ export default function Navbar({ pageTitle }: NavbarProps) {
           </div>
 
           {user && (
-            <div className="hidden sm:block text-[#4E342E]">
+            <div className="hidden sm:block text-base text-[#4E342E]">
               <span className="font-bold">{user.username}</span> 님 환영합니다
               👋
             </div>
@@ -63,7 +63,7 @@ export default function Navbar({ pageTitle }: NavbarProps) {
         </div>
       </div>
 
-      <div className="sm:hidden block flex justify-between items-center h-6">
+      <div className="sm:hidden block flex text-base justify-between items-center h-6">
         {user && (
           <div className="text-[#4E342E]">
             <span className="font-bold">{user.username}</span> 님 환영합니다 👋

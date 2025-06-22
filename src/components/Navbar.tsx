@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/user";
-import { Button } from "@/components/ui/button";
-import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 type NavbarProps = {
   pageTitle?: string;
@@ -14,32 +12,12 @@ export default function Navbar({ pageTitle }: NavbarProps) {
   const router = useRouter();
 
   const user = useUserStore((state) => state.user);
-  const clearUser = useUserStore((state) => state.clearUser);
-
-  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-  const handleLogout = async () => {
-    try {
-      const res = await fetchWithAuth(`${apiUrl}/api/users/logout`, {
-        method: "POST",
-      });
-
-      if (!res.ok) {
-        throw new Error("로그아웃 실패");
-      }
-
-      clearUser();
-
-      router.push("/login");
-    } catch {
-      alert("로그아웃 중 오류가 발생했습니다.");
-    }
-  };
 
   return (
     <nav className="w-full px-4 py-3 md:py-2 bg-[#FFD8A9] shadow-md flex flex-col gap-2 sticky top-0 z-50">
       <div className="flex items-center justify-between">
-        <div className="flex gap-2 items-end">
+        {/* 왼쪽: 로고 + 인사 */}
+        <div className="flex gap-2 items-end shrink-0">
           <div
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => router.push("/")}
@@ -58,7 +36,18 @@ export default function Navbar({ pageTitle }: NavbarProps) {
           )}
         </div>
 
-        <div className="flex gap-3 font-bold">
+        {/* 가운데: 페이지 타이틀 */}
+        <div className="flex-1 min-w-0 flex justify-end pr-3">
+          <div
+            className="hidden sm:block bg-[#FFFDF8] text-[#4E342E] text-xs font-semibold px-3 py-2 rounded-lg
+      overflow-hidden whitespace-nowrap text-ellipsis max-w-[80%] text-center"
+          >
+            {pageTitle ?? "현재 페이지 위치"}
+          </div>
+        </div>
+
+        {/* 오른쪽: 버튼들 */}
+        <div className="flex gap-3 font-bold shrink-0">
           <Link
             href="/stock"
             className="text-[#FFEED9] bg-[#8D5F45] hover:bg-[#4E342E] text-base px-3 py-1 rounded-lg"
@@ -71,12 +60,6 @@ export default function Navbar({ pageTitle }: NavbarProps) {
           >
             레시피관리
           </Link>
-          <Button
-            onClick={handleLogout}
-            className="hidden sm:block bg-[#8D5F45] hover:bg-[#4E342E] text-[#FFEED9] text-base px-3 py-1 rounded-lg font-bold h-8"
-          >
-            로그아웃
-          </Button>
         </div>
       </div>
 

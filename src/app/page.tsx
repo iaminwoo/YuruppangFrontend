@@ -2,9 +2,32 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { useUserStore } from "@/store/user";
 
 export default function Home() {
   const router = useRouter();
+  const clearUser = useUserStore((state) => state.clearUser);
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetchWithAuth(`${apiUrl}/api/users/logout`, {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        throw new Error("로그아웃 실패");
+      }
+
+      clearUser();
+
+      router.push("/login");
+    } catch {
+      alert("로그아웃 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#FFF8F0] p-6 font-sans">
@@ -34,6 +57,22 @@ export default function Home() {
           className="bg-[#FFD8A9] hover:bg-[#f7c88f] text-[#4E342E] w-full max-w-[220px] text-xl py-7 rounded-xl shadow"
         >
           레시피 관리
+        </Button>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-4 justify-center items-center w-full mt-12 md:mt-6">
+        <Button
+          onClick={handleLogout}
+          className="bg-[#FFE7C9] hover:bg-[#fddbb0] text-[#4E342E] w-full max-w-[220px] text-base py-3 rounded-xl shadow"
+        >
+          로그아웃
+        </Button>
+
+        <Button
+          onClick={() => router.push("/")}
+          className="bg-[#FFF3E4] hover:bg-[#fcebd5] text-[#4E342E] w-full max-w-[220px] text-base py-3 rounded-xl shadow"
+        >
+          사용자 정보 변경
         </Button>
       </div>
     </main>

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import Image from "next/image";
 
 // API에서 받아오는 Recipe 타입 정의
 interface RecipeDetail {
@@ -157,6 +158,26 @@ export default function PlanCompletePage() {
 
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans">
+      {/* submitting=true일 때 전체 오버레이 */}
+      {submitting && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/10">
+          <div className="bg-white p-6 rounded-xl flex flex-col items-center gap-4">
+            <p className="text-lg text-center font-medium text-[#4E342E]">
+              베이킹 플랜을 저장하고 있습니다... <br />
+              여기 귀여운 빵아지들을 보며 <br />
+              잠시만 기다려 주세요…
+            </p>
+            <Image
+              src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGV2bnljM29iamlzeGY2eW9pazhsem5ya3BqbTRpZjB5dXFtcjRtcyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/6C9CMGMFtzzbO/giphy.gif"
+              alt="Loading..."
+              className="rounded-xl"
+              width={200}
+              height={200}
+            />
+          </div>
+        </div>
+      )}
+
       <Navbar pageTitle="베이킹플랜 완성 페이지" />
       <main className="p-6 max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-[#4E342E] mb-4">

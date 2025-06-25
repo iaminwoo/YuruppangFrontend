@@ -1094,7 +1094,7 @@ export default function PlanDetailPage() {
                         onClick={handleIngredientsSubmit}
                         className="mt-2 py-5 w-full bg-[#B9896D] text-white rounded-xl"
                       >
-                        저장하기
+                        레시피 저장하기
                       </Button>
                     )}
                   </div>
@@ -1116,7 +1116,7 @@ export default function PlanDetailPage() {
                   onClick={handleMemoSubmit}
                   className="mt-2 py-5 w-full bg-[#B9896D] text-white rounded-xl"
                 >
-                  저장하기
+                  메모 저장하기
                 </Button>
               </div>
             </section>

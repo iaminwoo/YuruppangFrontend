@@ -124,6 +124,7 @@ export default function PlanDetailPage() {
   const [selectedRecipeIndex, setSelectedRecipeIndex] = useState(0);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [newGoalQuantity, setNewGoalQuantity] = useState<string | number>("");
+  const [isSavingRecipe, setIsSavingRecipe] = useState(false);
 
   // ──────────────────────────────────────────────────────────────────────────────
   // ‘레시피 추가’ 모달 관련 상태
@@ -412,6 +413,9 @@ export default function PlanDetailPage() {
 
   const handleIngredientsSubmit = async () => {
     if (!editingRecipe) return;
+    if (!isSavingRecipe) return;
+    setIsSavingRecipe(true);
+
     for (const part of editingRecipe.comparedParts) {
       for (const ing of part.comparedIngredients) {
         if (!ing.ingredientName || ing.customizedQuantity === "" || !ing.unit) {
@@ -451,6 +455,8 @@ export default function PlanDetailPage() {
       fetchPlanDetail();
     } catch (err) {
       toast.error((err as Error).message);
+    } finally {
+      setIsSavingRecipe(false);
     }
   };
 
@@ -1092,9 +1098,10 @@ export default function PlanDetailPage() {
                     {!plan.isComplete && (
                       <Button
                         onClick={handleIngredientsSubmit}
+                        disabled={isSavingRecipe}
                         className="mt-2 py-5 w-full bg-[#B9896D] text-white rounded-xl"
                       >
-                        레시피 저장하기
+                        {isSavingRecipe ? "저장중…" : "레시피 저장하기"}
                       </Button>
                     )}
                   </div>

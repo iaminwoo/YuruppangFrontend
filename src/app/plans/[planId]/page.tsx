@@ -413,7 +413,7 @@ export default function PlanDetailPage() {
 
   const handleIngredientsSubmit = async () => {
     if (!editingRecipe) return;
-    if (!isSavingRecipe) return;
+    if (isSavingRecipe) return;
     setIsSavingRecipe(true);
 
     for (const part of editingRecipe.comparedParts) {

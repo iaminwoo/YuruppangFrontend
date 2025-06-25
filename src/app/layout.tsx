@@ -3,6 +3,7 @@
 import "./globals.css";
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
+import TouchFeedback from "@/components/TouchFeedback";
 
 export const metadata: Metadata = {
   title: "유루빵 | 제과제빵 관리 서비스",
@@ -30,6 +31,7 @@ export default function RootLayout({
   return (
     <html lang="ko" className="font-sans">
       <body>
+        <TouchFeedback />
         {children}
         <Toaster richColors position="top-right" />
       </body>

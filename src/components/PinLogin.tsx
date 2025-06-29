@@ -134,6 +134,10 @@ export default function PinLogin() {
       >
         게스트 계정으로 입장하기
       </button>
+      {/* 게스트 계정 안내 */}
+      <p className="mt-1 text-sm text-gray-600 text-center">
+        (게스트 계정은 데이터 수정을 할 수 없습니다.)
+      </p>
     </div>
   );
 }

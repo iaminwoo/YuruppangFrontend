@@ -125,6 +125,15 @@ export default function PinLogin() {
           </button>
         ))}
       </div>
+
+      {/* 게스트 로그인 버튼 */}
+      <button
+        onClick={() => onSubmit("0000")}
+        disabled={loading}
+        className="mt-2 text-base text-[#4E342E] underline hover:text-gray-900 disabled:opacity-50"
+      >
+        게스트 계정으로 입장하기
+      </button>
     </div>
   );
 }

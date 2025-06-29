@@ -21,6 +21,9 @@ export default function SignUp() {
   const pinConfirmRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async () => {
+    alert("현재는 회원가입이 불가능합니다.");
+    return;
+
     if (!username) {
       setError("사용자명을 입력해주세요.");
       usernameRef.current?.focus();
@@ -106,6 +109,9 @@ export default function SignUp() {
           </p>
 
           <h2 className="text-2xl font-bold text-[#4E342E]">회원가입</h2>
+          <h2 className="text-xl font-bold text-red-500">
+            현재는 회원가입이 불가능합니다🥲
+          </h2>
 
           <div className="w-full h-px bg-gray-300 mt-2 mb-4" />
 

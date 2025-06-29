@@ -3,6 +3,8 @@
 베이킹 재고 및 레시피 관리 웹 서비스 **Yuruppang**의 프론트엔드 레포지터리입니다.  
 재고 파악, 레시피 기록, 생산 계획 등을 돕는 홈베이킹 전용 서비스입니다.
 
+**백엔드 리포 :** https://github.com/iaminwoo/YuruppangBackend
+
 ## 🛠️ 기술 스택
 
 - **Next.js**

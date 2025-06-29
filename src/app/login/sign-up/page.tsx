@@ -81,7 +81,7 @@ export default function SignUp() {
       router.push("/"); // 혹은 메인화면 등
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
+        // setError(err.message);
       } else {
         setError("예기치 않은 오류가 발생했습니다.");
       }

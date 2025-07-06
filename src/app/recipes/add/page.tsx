@@ -462,8 +462,10 @@ export default function RecipeForm() {
                         <div className="text-sm text-end ml-1 mt-1 text-gray-500">
                           총 보유량: {stockNum.toLocaleString()} {ing.unit}
                           <br />
-                          {ing.quantity !== "" && <span>사용 후 잔량: </span>}
-                          {ing.quantity !== "" && (
+                          {totalUsage[ing.ingredientName.trim()] !==
+                            undefined && <span>사용 후 잔량: </span>}
+                          {totalUsage[ing.ingredientName.trim()] !==
+                            undefined && (
                             <span
                               className={
                                 remainingQuantity !== null &&

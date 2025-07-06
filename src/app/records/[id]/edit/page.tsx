@@ -203,8 +203,11 @@ export default function RecordEditPage() {
           <IngredientSearchModal
             isOpen={showIngredientModal}
             onClose={() => setShowIngredientModal(false)}
-            onSelect={(ingredientName: string) => {
-              setForm((prev) => ({ ...prev, ingredientName }));
+            onSelect={(ingredient) => {
+              setForm((prev) => ({
+                ...prev,
+                ingredientName: ingredient.ingredientName,
+              }));
               setShowIngredientModal(false);
             }}
           />

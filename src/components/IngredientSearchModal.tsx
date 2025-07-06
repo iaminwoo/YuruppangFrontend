@@ -8,13 +8,17 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 interface IngredientSearchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  /** 선택된 재료명을 문자열로 반환합니다. */
-  onSelect: (ingredientName: string) => void;
+  /** 선택된 재료 객체 전체를 반환합니다. */
+  onSelect: (ingredient: Ingredient) => void;
   initialKeyword?: string;
 }
 
 interface Ingredient {
+  ingredientId: number;
   ingredientName: string;
+  unit: string;
+  unitPrice: string;
+  totalQuantity: string;
 }
 
 export default function IngredientSearchModal({
@@ -25,17 +29,15 @@ export default function IngredientSearchModal({
 }: IngredientSearchModalProps) {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  // 입력값과 실제 검색어 분리
   const [keyword, setKeyword] = useState(initialKeyword);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<{ name: string }[]>([]);
+  const [searchResults, setSearchResults] = useState<Ingredient[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 사용자가 입력할 때만 keyword 업데이트하고 디바운스 후 searchTerm 설정
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setKeyword(val);
@@ -48,7 +50,6 @@ export default function IngredientSearchModal({
     }, 300);
   };
 
-  // searchTerm이 바뀔 때만 실제 검색 수행
   useEffect(() => {
     if (!searchTerm) {
       setSearchResults([]);
@@ -66,9 +67,7 @@ export default function IngredientSearchModal({
         if (!res.ok) throw new Error(`검색 실패: ${res.status}`);
         const json = await res.json();
         if (!canceled) {
-          const list: { name: string }[] = (json.data?.ingredients || []).map(
-            (ing: Ingredient) => ({ name: ing.ingredientName })
-          );
+          const list: Ingredient[] = json.data?.ingredients || [];
           setSearchResults(list);
         }
       } catch (err) {
@@ -87,7 +86,6 @@ export default function IngredientSearchModal({
     };
   }, [searchTerm]);
 
-  // 모달 열릴 때 초기화 (searchTerm은 초기화하지 않아 불필요한 호출 방지)
   useEffect(() => {
     if (isOpen) {
       setKeyword(initialKeyword);
@@ -100,7 +98,6 @@ export default function IngredientSearchModal({
     }
   }, [isOpen, initialKeyword]);
 
-  // ESC로 닫기
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -109,7 +106,6 @@ export default function IngredientSearchModal({
     return () => document.removeEventListener("keydown", handleKeydown);
   }, [isOpen, onClose]);
 
-  // 외부 클릭 닫기
   const overlayRef = useRef<HTMLDivElement>(null);
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === overlayRef.current) onClose();
@@ -118,7 +114,7 @@ export default function IngredientSearchModal({
   const blacklist = ["계란"];
   const trimmedKeyword = keyword.trim();
   const hasExactMatch = searchResults.some(
-    (result) => result.name === trimmedKeyword
+    (result) => result.ingredientName === trimmedKeyword
   );
   const isBlacklisted = blacklist.includes(trimmedKeyword);
 
@@ -149,7 +145,6 @@ export default function IngredientSearchModal({
             value={keyword}
             onChange={handleInput}
             className="flex-1 border border-gray-300 rounded-md px-2 py-1"
-            autoFocus={false}
           />
           <Button type="button" variant="ghost" size="sm" onClick={onClose}>
             닫기
@@ -172,11 +167,14 @@ export default function IngredientSearchModal({
                     type="button"
                     className="flex justify-between items-center p-2 bg-gray-100 rounded hover:bg-gray-200 w-full text-left"
                     onClick={() => {
-                      onSelect(ing.name);
+                      onSelect(ing);
                       onClose();
                     }}
                   >
-                    <span className="text-gray-800">{ing.name}</span>
+                    <span className="text-gray-800">{ing.ingredientName}</span>
+                    <span className="text-sm text-gray-500">
+                      {parseFloat(ing.totalQuantity).toLocaleString()} g
+                    </span>
                   </button>
                 </li>
               ))
@@ -194,7 +192,13 @@ export default function IngredientSearchModal({
                   toast.error("재료명을 입력하거나 검색해주세요.");
                   return;
                 }
-                onSelect(keyword.trim());
+                onSelect({
+                  ingredientId: -1,
+                  ingredientName: keyword.trim(),
+                  unit: "",
+                  unitPrice: "0",
+                  totalQuantity: "0",
+                });
                 onClose();
               }}
               className="w-full"

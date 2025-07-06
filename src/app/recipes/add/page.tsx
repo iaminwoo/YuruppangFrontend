@@ -12,6 +12,7 @@ interface Ingredient {
   ingredientName: string;
   quantity: number | string;
   unit: string;
+  stock: number | string;
 }
 
 interface Part {
@@ -36,7 +37,7 @@ export default function RecipeForm() {
   const [parts, setParts] = useState<Part[]>([
     {
       partName: "",
-      ingredients: [{ ingredientName: "", quantity: "", unit: "g" }],
+      ingredients: [{ ingredientName: "", quantity: "", unit: "g", stock: "" }],
     },
   ]);
 
@@ -109,6 +110,7 @@ export default function RecipeForm() {
       ingredientName: "",
       quantity: "",
       unit: "g",
+      stock: "",
     });
     setParts(newParts);
   };
@@ -127,7 +129,9 @@ export default function RecipeForm() {
       ...parts,
       {
         partName: "",
-        ingredients: [{ ingredientName: "", quantity: "", unit: "g" }],
+        ingredients: [
+          { ingredientName: "", quantity: "", unit: "g", stock: "" },
+        ],
       },
     ]);
   };
@@ -373,75 +377,91 @@ export default function RecipeForm() {
 
               {/* 해당 파트 재료들 */}
               {part.ingredients.map((ing, i) => (
-                <div key={i} className="flex gap-2 items-center mb-2">
-                  {/* ① 재료명 대신 모달 트리거 버튼 */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setCurrentPartIndex(partIndex);
-                      setCurrentIngredientIndex(i);
-                      setShowIngredientModal(true);
-                    }}
-                    className={`flex-grow border border-gray-300 p-1 rounded-md text-left ${
-                      ing.ingredientName ? "text-gray-900" : "text-gray-400"
-                    }`}
-                  >
-                    {ing.ingredientName || "재료명을 선택하세요"}
-                  </button>
-                  <input
-                    type="number"
-                    min={0}
-                    step="any"
-                    placeholder="수량"
-                    value={ing.quantity}
-                    onChange={(e) =>
-                      handlePartIngredientChange(
-                        partIndex,
-                        i,
-                        "quantity",
-                        e.target.value
-                      )
-                    }
-                    className="border border-gray-300 p-1 rounded-md w-24"
-                  />
-                  <select
-                    value={ing.unit}
-                    onChange={(e) =>
-                      handlePartIngredientChange(
-                        partIndex,
-                        i,
-                        "unit",
-                        e.target.value
-                      )
-                    }
-                    className="border border-gray-300 p-1 rounded-md w-20"
-                  >
-                    <option>g</option>
-                    <option>ml</option>
-                    <option>개</option>
-                  </select>
-                  {part.ingredients.length > 1 && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => removePartIngredient(partIndex, i)}
+                <div key={i} className="mb-3">
+                  <div className="flex gap-2 items-center">
+                    {/* ① 재료명 대신 모달 트리거 버튼 */}
+                    <button
                       type="button"
+                      onClick={() => {
+                        setCurrentPartIndex(partIndex);
+                        setCurrentIngredientIndex(i);
+                        setShowIngredientModal(true);
+                      }}
+                      className={`flex-grow border border-gray-300 p-1 rounded-md text-left ${
+                        ing.ingredientName ? "text-gray-900" : "text-gray-400"
+                      }`}
                     >
-                      삭제
-                    </Button>
-                  )}
+                      {ing.ingredientName || "재료명을 선택하세요"}
+                    </button>
+                    <input
+                      type="number"
+                      min={0}
+                      step="any"
+                      placeholder="수량"
+                      value={ing.quantity}
+                      onChange={(e) =>
+                        handlePartIngredientChange(
+                          partIndex,
+                          i,
+                          "quantity",
+                          e.target.value
+                        )
+                      }
+                      className="border border-gray-300 p-1 rounded-md w-24"
+                    />
+                    <select
+                      value={ing.unit}
+                      onChange={(e) =>
+                        handlePartIngredientChange(
+                          partIndex,
+                          i,
+                          "unit",
+                          e.target.value
+                        )
+                      }
+                      className="border border-gray-300 p-1 rounded-md w-20"
+                    >
+                      <option>g</option>
+                      <option>ml</option>
+                      <option>개</option>
+                    </select>
+                    {part.ingredients.length > 1 && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removePartIngredient(partIndex, i)}
+                        type="button"
+                      >
+                        삭제
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    {i === part.ingredients.length - 1 ? (
+                      <Button
+                        variant="link"
+                        size="sm"
+                        onClick={() => addPartIngredient(partIndex)}
+                        type="button"
+                        className="mt-1"
+                      >
+                        + 재료 추가
+                      </Button>
+                    ) : (
+                      <div></div>
+                    )}
+
+                    {ing.stock && (
+                      <div className="text-sm text-gray-500 ml-1 mt-1">
+                        총 보유량:{" "}
+                        {parseFloat(String(ing.stock)).toLocaleString()}{" "}
+                        {ing.unit}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
-
-              <Button
-                variant="link"
-                size="sm"
-                onClick={() => addPartIngredient(partIndex)}
-                type="button"
-                className="mt-1"
-              >
-                + 재료 추가
-              </Button>
             </div>
           ))}
 
@@ -504,15 +524,16 @@ export default function RecipeForm() {
           <IngredientSearchModal
             isOpen={showIngredientModal}
             onClose={() => setShowIngredientModal(false)}
-            onSelect={(ingredientName: string) => {
-              // 선택된 재료명을 해당 위치에 반영
+            onSelect={(ingredient) => {
               const newParts = [...parts];
               newParts[currentPartIndex].ingredients[
                 currentIngredientIndex
-              ].ingredientName = ingredientName;
+              ].ingredientName = ingredient.ingredientName;
+              newParts[currentPartIndex].ingredients[
+                currentIngredientIndex
+              ].stock = ingredient.totalQuantity;
               setParts(newParts);
 
-              // 모달 닫기 및 인덱스 리셋
               setShowIngredientModal(false);
               setCurrentPartIndex(null);
               setCurrentIngredientIndex(null);

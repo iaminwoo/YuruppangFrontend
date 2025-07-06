@@ -1399,7 +1399,7 @@ export default function PlanDetailPage() {
           <IngredientSearchModal
             isOpen={showIngredientModal}
             onClose={() => setShowIngredientModal(false)}
-            onSelect={(ingredientName: string) => {
+            onSelect={(ingredient) => {
               if (currentPartIndex === null || currentIngredientIndex === null)
                 return;
 
@@ -1409,7 +1409,7 @@ export default function PlanDetailPage() {
               // 해당 위치 재료명 수정
               updatedParts[currentPartIndex].comparedIngredients[
                 currentIngredientIndex
-              ].ingredientName = ingredientName;
+              ].ingredientName = ingredient.ingredientName;
 
               // 상태 업데이트
               setEditingRecipe((prev) => {

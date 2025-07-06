@@ -564,15 +564,13 @@ export default function RecipeEditPage() {
             <IngredientSearchModal
               isOpen={showIngredientModal}
               onClose={() => setShowIngredientModal(false)}
-              onSelect={(ingredientName: string) => {
-                // 선택된 재료명을 해당 위치에 반영
+              onSelect={(ingredient) => {
                 const newParts = [...parts];
                 newParts[currentPartIndex].ingredients[
                   currentIngredientIndex
-                ].ingredientName = ingredientName;
+                ].ingredientName = ingredient.ingredientName;
                 setParts(newParts);
 
-                // 모달 닫기 및 인덱스 리셋
                 setShowIngredientModal(false);
                 setCurrentPartIndex(null);
                 setCurrentIngredientIndex(null);

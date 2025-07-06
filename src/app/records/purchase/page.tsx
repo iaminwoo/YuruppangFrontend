@@ -292,10 +292,10 @@ export default function PurchasePage() {
           <IngredientSearchModal
             isOpen={showIngredientModal}
             onClose={() => setShowIngredientModal(false)}
-            onSelect={(ingredientName: string) => {
+            onSelect={(ingredient) => {
               // items 배열 복사 및 업데이트
               const newItems = [...items];
-              newItems[currentIngredientIndex].name = ingredientName;
+              newItems[currentIngredientIndex].name = ingredient.ingredientName;
               setItems(newItems);
 
               // 모달 닫기 및 인덱스 리셋

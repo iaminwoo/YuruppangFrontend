@@ -365,14 +365,13 @@ export default function RecipeForm() {
                 )}
 
                 {parts.length > 1 && (
-                  <Button
-                    variant="destructive"
-                    size="sm"
+                  <button
                     onClick={() => removePart(partIndex)}
                     type="button"
+                    className="text-red-600 font-semibold hover:underline"
                   >
                     파트 삭제
-                  </Button>
+                  </button>
                 )}
               </div>
 

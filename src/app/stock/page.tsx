@@ -19,6 +19,7 @@ interface ApiResponse {
   msg: string;
   data: {
     ingredients: Ingredient[];
+    totalPage: number;
   };
 }
 
@@ -28,25 +29,53 @@ export default function StockPage() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(0); // 현재 페이지
+  const [totalPages, setTotalPages] = useState(1); // 총 페이지 수
 
   useEffect(() => {
-    fetchWithAuth(`${apiUrl}/api/ingredients`)
-      .then((res) => {
-        if (!res.ok) throw new Error("재고 데이터를 불러오지 못했습니다.");
-        return res.json();
-      })
-      .then((data: ApiResponse) => {
-        if (data.resultCode === "OK") {
-          setIngredients(data.data.ingredients);
-        } else {
-          setError(data.msg || "알 수 없는 오류");
-        }
-      })
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+    fetchIngredients(0);
   }, []);
 
-  // 페이지 상단 useEffect 아래에 추가
+  const fetchIngredients = async (page = 0, keyword = "") => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const url = `${apiUrl}/api/ingredients?page=${page}${
+        keyword ? `&keyword=${encodeURIComponent(keyword)}` : ""
+      }`;
+
+      const res = await fetchWithAuth(url);
+      if (!res.ok) throw new Error("데이터를 불러오지 못했습니다.");
+
+      const data: ApiResponse = await res.json();
+
+      if (data.resultCode === "OK") {
+        setIngredients(data.data.ingredients);
+        setTotalPages(data.data.totalPage);
+        setPage(page); // 페이지 업데이트
+      } else {
+        setError(data.msg || "알 수 없는 오류");
+      }
+    } catch (e: unknown) {
+      if (e instanceof Error) setError(e.message);
+      else setError("알 수 없는 에러가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = () => {
+    fetchIngredients(0, searchTerm); // 검색 시 첫 페이지부터
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   const handleCleanup = async () => {
     if (!confirm("사용되지 않는 재료를 정리하시겠습니까?")) return;
 
@@ -130,6 +159,23 @@ export default function StockPage() {
           </div>
         </div>
 
+        <div className="flex items-center gap-2 w-full">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="재료명을 입력하세요"
+            className="flex-1 px-3 py-2 border rounded-lg shadow-sm text-sm"
+          />
+          <Button
+            className="bg-[#C89F84] text-white px-4 py-2 rounded-lg text-sm"
+            onClick={handleSearch}
+          >
+            검색
+          </Button>
+        </div>
+
         {/* 재고 데이터 표시 영역 */}
         {loading ? (
           <div className="w-full h-32 bg-[#FFEED9] rounded-xl flex items-center justify-center text-[#A97155]">
@@ -169,6 +215,26 @@ export default function StockPage() {
                 </div>
               </div>
             ))}
+
+            <div className="flex justify-center items-center gap-2 mt-4">
+              <Button
+                disabled={page === 0}
+                onClick={() => fetchIngredients(page - 1, searchTerm)}
+                className="px-3 py-1 bg-[#D7B49E] text-white text-sm rounded-xl"
+              >
+                이전
+              </Button>
+              <span className="text-sm text-[#4E342E] mt-1">
+                {page + 1} / {totalPages}
+              </span>
+              <Button
+                disabled={page + 1 >= totalPages}
+                onClick={() => fetchIngredients(page + 1, searchTerm)}
+                className="px-3 py-1 bg-[#D7B49E] text-white text-sm rounded-xl"
+              >
+                다음
+              </Button>
+            </div>
           </div>
         )}
       </main>

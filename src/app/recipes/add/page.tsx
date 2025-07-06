@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
@@ -33,7 +33,6 @@ export default function RecipeForm() {
   const [description, setDescription] = useState("");
   const [outputQuantity, setOutputQuantity] = useState<number | string>("");
 
-  // 파트 상태
   const [parts, setParts] = useState<Part[]>([
     {
       partName: "",
@@ -41,27 +40,19 @@ export default function RecipeForm() {
     },
   ]);
 
-  // 로딩 상태
   const [loading, setLoading] = useState(false);
 
-  // 카테고리 관련 상태
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | "">("");
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
-  // ──────────────────────────────────────────────────────────────────────────────
-  // 재료 검색 모달 관련 상태
-  // ──────────────────────────────────────────────────────────────────────────────
-  // 현재 열려 있는지 여부
   const [showIngredientModal, setShowIngredientModal] = useState(false);
-  // 모달을 연 재료가 속한 partIndex, ingredientIndex
   const [currentPartIndex, setCurrentPartIndex] = useState<number | null>(null);
   const [currentIngredientIndex, setCurrentIngredientIndex] = useState<
     number | null
   >(null);
 
-  // 컴포넌트 마운트 시 카테고리 목록 불러오기
   useEffect(() => {
     fetchWithAuth(`${apiUrl}/api/categories`)
       .then((res) => {
@@ -69,7 +60,6 @@ export default function RecipeForm() {
         return res.json();
       })
       .then((resp) => {
-        // resp.data가 배열이 맞는지 재확인하고, 그대로 categories에 할당
         if (resp && Array.isArray(resp.data)) {
           setCategories(resp.data);
         } else {
@@ -81,14 +71,38 @@ export default function RecipeForm() {
       });
   }, []);
 
-  // 파트 이름 변경
+  // 재료별 총 사용량을 계산하는 함수
+  const calculateTotalUsage = (parts: Part[]) => {
+    const usageMap: Record<string, number> = {};
+
+    parts.forEach((part) => {
+      part.ingredients.forEach((ing) => {
+        if (!ing.ingredientName) return;
+        const quantity =
+          typeof ing.quantity === "string"
+            ? parseFloat(ing.quantity)
+            : ing.quantity;
+        if (isNaN(quantity)) return;
+
+        if (!usageMap[ing.ingredientName]) usageMap[ing.ingredientName] = 0;
+        usageMap[ing.ingredientName] += quantity;
+      });
+    });
+
+    return usageMap;
+  };
+
+  // useMemo로 parts가 바뀔 때마다 총 사용량 계산
+  const totalUsage = useMemo(() => calculateTotalUsage(parts), [parts]);
+
+  // 이하 기존 함수들 (handlePartNameChange 등) 동일
+
   const handlePartNameChange = (index: number, value: string) => {
     const newParts = [...parts];
     newParts[index].partName = value;
     setParts(newParts);
   };
 
-  // 파트 재료 변경
   const handlePartIngredientChange = (
     partIndex: number,
     ingredientIndex: number,
@@ -103,7 +117,6 @@ export default function RecipeForm() {
     setParts(newParts);
   };
 
-  // 파트 재료 추가
   const addPartIngredient = (partIndex: number) => {
     const newParts = [...parts];
     newParts[partIndex].ingredients.push({
@@ -115,15 +128,13 @@ export default function RecipeForm() {
     setParts(newParts);
   };
 
-  // 파트 재료 삭제
   const removePartIngredient = (partIndex: number, ingredientIndex: number) => {
     const newParts = [...parts];
-    if (newParts[partIndex].ingredients.length === 1) return; // 최소 1개 유지
+    if (newParts[partIndex].ingredients.length === 1) return;
     newParts[partIndex].ingredients.splice(ingredientIndex, 1);
     setParts(newParts);
   };
 
-  // 파트 추가
   const addPart = () => {
     setParts([
       ...parts,
@@ -136,13 +147,11 @@ export default function RecipeForm() {
     ]);
   };
 
-  // 파트 삭제
   const removePart = (index: number) => {
     const newParts = parts.filter((_, i) => i !== index);
     setParts(newParts);
   };
 
-  // 카테고리 생성 모달에서 저장
   const handleCreateCategory = async () => {
     if (!newCategoryName.trim()) {
       alert("카테고리 이름을 입력하세요.");
@@ -162,7 +171,6 @@ export default function RecipeForm() {
 
       const resp = await res.json();
       const created: Category = resp.data;
-      // 카테고리 목록 갱신 & 바로 선택
       setCategories((prev) => [...prev, created]);
       setSelectedCategoryId(created.categoryId);
       setNewCategoryName("");
@@ -177,7 +185,6 @@ export default function RecipeForm() {
   };
 
   const handleSubmit = async () => {
-    // 1) 기본 입력 값 체크
     if (
       !name.trim() ||
       !description.trim() ||
@@ -188,7 +195,6 @@ export default function RecipeForm() {
       return;
     }
 
-    // 2) 제출 직전에 “파트가 하나이고 이름이 없다면 '기본'으로 채워주기”
     const adjustedParts: Part[] = parts.map((p) => ({
       partName: p.partName.trim(),
       ingredients: [...p.ingredients],
@@ -197,9 +203,7 @@ export default function RecipeForm() {
       adjustedParts[0].partName = "기본";
     }
 
-    // 3) 재료 정보만 깔끔하게 뽑아서 cleanParts 생성
     const cleanParts = adjustedParts
-      // partName은 무조건 하나 이상 있기 때문에 filter는 ingredients 길이만 검사
       .filter((part) => part.ingredients.length > 0)
       .map((part) => ({
         partName: part.partName,
@@ -216,16 +220,13 @@ export default function RecipeForm() {
             unit: ing.unit,
           })),
       }))
-      // 혹시 필터링 결과 파트 안에 재료가 하나도 없다면 그 파트는 제외
       .filter((part) => part.ingredients.length > 0);
 
-    // 4) 최종적으로 cleanParts가 비어 있으면 경고
     if (cleanParts.length === 0) {
       alert("최소 한 개 이상의 재료를 가진 파트가 필요합니다.");
       return;
     }
 
-    // 5) 서버로 보낼 payload 구성
     const payload = {
       name: name.trim(),
       description: description.trim(),
@@ -375,93 +376,114 @@ export default function RecipeForm() {
                 )}
               </div>
 
-              {/* 해당 파트 재료들 */}
-              {part.ingredients.map((ing, i) => (
-                <div key={i} className="mb-3">
-                  <div className="flex gap-2 items-center">
-                    {/* ① 재료명 대신 모달 트리거 버튼 */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCurrentPartIndex(partIndex);
-                        setCurrentIngredientIndex(i);
-                        setShowIngredientModal(true);
-                      }}
-                      className={`flex-grow border border-gray-300 p-1 rounded-md text-left ${
-                        ing.ingredientName ? "text-gray-900" : "text-gray-400"
-                      }`}
-                    >
-                      {ing.ingredientName || "재료명을 선택하세요"}
-                    </button>
-                    <input
-                      type="number"
-                      min={0}
-                      step="any"
-                      placeholder="수량"
-                      value={ing.quantity}
-                      onChange={(e) =>
-                        handlePartIngredientChange(
-                          partIndex,
-                          i,
-                          "quantity",
-                          e.target.value
-                        )
-                      }
-                      className="border border-gray-300 p-1 rounded-md w-24"
-                    />
-                    <select
-                      value={ing.unit}
-                      onChange={(e) =>
-                        handlePartIngredientChange(
-                          partIndex,
-                          i,
-                          "unit",
-                          e.target.value
-                        )
-                      }
-                      className="border border-gray-300 p-1 rounded-md w-20"
-                    >
-                      <option>g</option>
-                      <option>ml</option>
-                      <option>개</option>
-                    </select>
-                    {part.ingredients.length > 1 && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => removePartIngredient(partIndex, i)}
-                        type="button"
-                      >
-                        삭제
-                      </Button>
-                    )}
-                  </div>
+              {part.ingredients.map((ing, i) => {
+                const stockNum = parseFloat(String(ing.stock));
+                const usedQuantity = totalUsage[ing.ingredientName] || 0;
+                const remainingQuantity = !isNaN(stockNum)
+                  ? stockNum - usedQuantity
+                  : null;
 
-                  <div className="flex justify-between items-center">
-                    {i === part.ingredients.length - 1 ? (
-                      <Button
-                        variant="link"
-                        size="sm"
-                        onClick={() => addPartIngredient(partIndex)}
+                return (
+                  <div key={i} className="mb-3">
+                    <div className="flex gap-2 items-center">
+                      <button
                         type="button"
-                        className="mt-1"
+                        onClick={() => {
+                          setCurrentPartIndex(partIndex);
+                          setCurrentIngredientIndex(i);
+                          setShowIngredientModal(true);
+                        }}
+                        className={`flex-grow border border-gray-300 p-1 rounded-md text-left ${
+                          ing.ingredientName ? "text-gray-900" : "text-gray-400"
+                        }`}
                       >
-                        + 재료 추가
-                      </Button>
-                    ) : (
-                      <div></div>
-                    )}
+                        {ing.ingredientName || "재료명을 선택하세요"}
+                      </button>
+                      <input
+                        type="number"
+                        min={0}
+                        step="any"
+                        placeholder="수량"
+                        value={ing.quantity}
+                        onChange={(e) =>
+                          handlePartIngredientChange(
+                            partIndex,
+                            i,
+                            "quantity",
+                            e.target.value
+                          )
+                        }
+                        className="border border-gray-300 p-1 rounded-md w-24"
+                      />
+                      <select
+                        value={ing.unit}
+                        onChange={(e) =>
+                          handlePartIngredientChange(
+                            partIndex,
+                            i,
+                            "unit",
+                            e.target.value
+                          )
+                        }
+                        className="border border-gray-300 p-1 rounded-md w-20"
+                      >
+                        <option>g</option>
+                        <option>ml</option>
+                        <option>개</option>
+                      </select>
+                      {part.ingredients.length > 1 && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => removePartIngredient(partIndex, i)}
+                          type="button"
+                        >
+                          삭제
+                        </Button>
+                      )}
+                    </div>
 
-                    {ing.stock && (
-                      <div className="text-sm text-gray-500 ml-1 mt-1">
-                        총 보유량:{" "}
-                        {parseFloat(String(ing.stock)).toLocaleString()}{" "}
-                        {ing.unit}
-                      </div>
-                    )}
+                    <div className="flex justify-between items-center">
+                      {i === part.ingredients.length - 1 ? (
+                        <Button
+                          variant="link"
+                          size="sm"
+                          onClick={() => addPartIngredient(partIndex)}
+                          type="button"
+                          className="mt-1"
+                        >
+                          + 재료 추가
+                        </Button>
+                      ) : (
+                        <div></div>
+                      )}
+
+                      {ing.stock && (
+                        <div className="text-sm text-end ml-1 mt-1 text-gray-500">
+                          총 보유량: {stockNum.toLocaleString()} {ing.unit}
+                          <br />
+                          {ing.quantity !== "" && <span>사용 후 잔량: </span>}
+                          {ing.quantity !== "" && (
+                            <span
+                              className={
+                                remainingQuantity !== null &&
+                                remainingQuantity < 0
+                                  ? "text-red-600 font-semibold"
+                                  : ""
+                              }
+                            >
+                              {remainingQuantity !== null
+                                ? remainingQuantity.toLocaleString()
+                                : "-"}{" "}
+                              {ing.unit}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ))}
 
@@ -470,7 +492,6 @@ export default function RecipeForm() {
           </Button>
         </section>
 
-        {/* 최종 등록 버튼 */}
         <Button
           onClick={handleSubmit}
           disabled={loading}
@@ -480,7 +501,6 @@ export default function RecipeForm() {
         </Button>
       </main>
 
-      {/* 새 카테고리 추가 모달 */}
       {showCategoryModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
@@ -515,9 +535,6 @@ export default function RecipeForm() {
         </div>
       )}
 
-      {/* ────────────────────────────────────────────────────────────────────────── */}
-      {/* 재료 검색/추가 모달 */}
-      {/* ────────────────────────────────────────────────────────────────────────── */}
       {showIngredientModal &&
         currentPartIndex !== null &&
         currentIngredientIndex !== null && (

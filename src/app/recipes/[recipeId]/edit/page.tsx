@@ -7,6 +7,12 @@ import { Button } from "@/components/ui/button";
 import IngredientSearchModal from "@/components/IngredientSearchModal";
 import AutoResizeTextarea from "@/components/AutoResizeTextarea";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "@hello-pangea/dnd";
 
 interface Ingredient {
   ingredientName: string;
@@ -171,6 +177,32 @@ export default function RecipeEditPage() {
     setParts(newParts);
   };
 
+  // 1. handleDragEnd 수정
+  const handleDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
+    if (!destination) return;
+
+    // droppableId: "part-0", "part-1" 등
+    const partIndex = parseInt(source.droppableId.split("-")[1], 10);
+
+    // 해당 파트 재료 복사
+    const newIngredients = Array.from(parts[partIndex].ingredients);
+    // 이동할 재료 추출
+    const [moved] = newIngredients.splice(source.index, 1);
+    // 새로운 위치에 삽입
+    newIngredients.splice(destination.index, 0, moved);
+
+    // 전체 parts 복사 후 해당 파트만 교체
+    setParts((prevParts) => {
+      const updatedParts = [...prevParts];
+      updatedParts[partIndex] = {
+        ...updatedParts[partIndex],
+        ingredients: newIngredients,
+      };
+      return updatedParts;
+    });
+  };
+
   // 파트 재료 삭제
   const removePartIngredient = (partIndex: number, ingredientIndex: number) => {
     const newParts = [...parts];
@@ -239,6 +271,7 @@ export default function RecipeEditPage() {
     }
   };
 
+  // 2. handleSubmit (변경 없음, 최신 parts 그대로 사용)
   const handleSubmit = async () => {
     if (
       !name.trim() ||
@@ -316,7 +349,6 @@ export default function RecipeEditPage() {
         <h2 className="text-xl font-bold text-[#4E342E] mb-4 mt-2">
           레시피 수정
         </h2>
-
         {/* 레시피 이름 */}
         <div>
           <label className="block mb-1 font-semibold text-[#4E342E]">
@@ -329,7 +361,6 @@ export default function RecipeEditPage() {
             className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
           />
         </div>
-
         {/* 카테고리 선택 */}
         <div>
           <label className="block mb-1 font-semibold text-[#4E342E]">
@@ -360,7 +391,6 @@ export default function RecipeEditPage() {
             </Button>
           </div>
         </div>
-
         {/* 새 카테고리 추가 모달 */}
         {showCategoryModal && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -395,7 +425,6 @@ export default function RecipeEditPage() {
             </div>
           </div>
         )}
-
         {/* 설명 */}
         <div>
           <label className="block mb-1 font-semibold text-[#4E342E]">
@@ -406,7 +435,6 @@ export default function RecipeEditPage() {
             setDescription={setDescription}
           />
         </div>
-
         {/* 생산 수량 */}
         <div>
           <label className="block mb-1 font-semibold text-[#4E342E]">
@@ -420,133 +448,170 @@ export default function RecipeEditPage() {
             className="w-24 rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
           />
         </div>
-
         <hr className="border-[#D7B49E] my-4" />
 
         {/* 파트 추가/삭제 */}
-        <section>
-          {parts.map((part, partIndex) => (
-            <div
-              key={partIndex}
-              className="bg-[#FFF8F0] rounded-xl shadow-md border p-4 mb-4"
-            >
-              <div className="flex justify-between items-center mb-2">
-                {parts.length === 1 ? (
-                  <div className="p-1 text-center text-[#A97155] font-semibold w-full">
-                    재료 목록
-                  </div>
-                ) : (
-                  <input
-                    type="text"
-                    placeholder="파트명을 입력하세요."
-                    value={part.partName}
-                    onChange={(e) =>
-                      handlePartNameChange(partIndex, e.target.value)
-                    }
-                    className="border border-gray-300 p-2 rounded-md w-1/3"
-                  />
-                )}
-
-                {parts.length > 1 && (
-                  <button
-                    onClick={() => removePart(partIndex)}
-                    className="text-[#BA8F66] text-2xl hover:text-[#966E3D]"
-                    aria-label="파트 삭제"
-                    title="파트 삭제"
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                {part.ingredients.map((ingredient, ingredientIndex) => (
-                  <div
-                    key={ingredientIndex}
-                    className="flex gap-2 items-center"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCurrentPartIndex(partIndex);
-                        setCurrentIngredientIndex(ingredientIndex);
-                        setShowIngredientModal(true);
-                      }}
-                      className={`flex-grow border border-gray-300 p-2 rounded-md text-left ${
-                        ingredient.ingredientName
-                          ? "text-gray-900"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      {ingredient.ingredientName || "재료명을 선택하세요"}
-                    </button>
-                    <input
-                      type="number"
-                      min={0}
-                      placeholder="수량"
-                      value={ingredient.requiredQuantity}
-                      onChange={(e) =>
-                        handlePartIngredientChange(
-                          partIndex,
-                          ingredientIndex,
-                          "requiredQuantity",
-                          e.target.value
-                        )
-                      }
-                      className="w-20 rounded-md border border-gray-300 p-2"
-                    />
-                    <select
-                      value={ingredient.unit}
-                      onChange={(e) =>
-                        handlePartIngredientChange(
-                          partIndex,
-                          ingredientIndex,
-                          "unit",
-                          e.target.value
-                        )
-                      }
-                      className="rounded-md  border border-gray-300 p-2"
-                    >
-                      <option value="G">G</option>
-                      <option value="Kg">Kg</option>
-                      <option value="ml">ml</option>
-                      <option value="개">개</option>
-                    </select>
-                    {part.ingredients.length > 1 && (
-                      <button
-                        onClick={() =>
-                          removePartIngredient(partIndex, ingredientIndex)
-                        }
-                        className="text-[#BA8F66] hover:text-[#966E3D]"
-                        aria-label="재료 삭제"
-                        title="재료 삭제"
-                      >
-                        ×
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <Button
-                variant="link"
-                size="sm"
-                onClick={() => addPartIngredient(partIndex)}
-                type="button"
-                className="mt-1"
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <section>
+            {parts.map((part, partIndex) => (
+              <div
+                key={partIndex}
+                className="bg-[#FFF8F0] rounded-xl shadow-md border p-4 mb-4"
               >
-                + 재료 추가
-              </Button>
-            </div>
-          ))}
+                <div className="flex justify-between items-center mb-2">
+                  {parts.length === 1 ? (
+                    <div className="p-1 text-center text-[#A97155] font-semibold w-full">
+                      재료 목록
+                    </div>
+                  ) : (
+                    <input
+                      type="text"
+                      placeholder="파트명을 입력하세요."
+                      value={part.partName}
+                      onChange={(e) =>
+                        handlePartNameChange(partIndex, e.target.value)
+                      }
+                      className="border border-gray-300 p-2 rounded-md w-1/3"
+                    />
+                  )}
 
-          <Button variant="outline" size="sm" onClick={addPart} type="button">
-            + 파트 추가
-          </Button>
-        </section>
+                  {parts.length > 1 && (
+                    <button
+                      onClick={() => removePart(partIndex)}
+                      className="text-[#BA8F66] text-2xl hover:text-[#966E3D]"
+                      aria-label="파트 삭제"
+                      title="파트 삭제"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+
+                {/* 드래그 가능한 재료 리스트 */}
+                <Droppable droppableId={`part-${partIndex}`} type="INGREDIENT">
+                  {(dropProvided) => (
+                    <div
+                      ref={dropProvided.innerRef}
+                      {...dropProvided.droppableProps}
+                      className="space-y-2"
+                    >
+                      {part.ingredients.map((ingredient, ingredientIndex) => (
+                        <Draggable
+                          key={`part-${partIndex}-ingredient-${ingredientIndex}`}
+                          draggableId={`part-${partIndex}-ingredient-${ingredientIndex}`}
+                          index={ingredientIndex}
+                        >
+                          {(dragProvided, snapshot) => (
+                            <div
+                              ref={dragProvided.innerRef}
+                              {...dragProvided.draggableProps}
+                              className={`flex gap-2 items-center p-1 rounded-md ${
+                                snapshot.isDragging ? "bg-white/70" : ""
+                              }`}
+                            >
+                              <span
+                                {...dragProvided.dragHandleProps}
+                                className="cursor-grab text-gray-400 select-none mr-1"
+                                aria-hidden="true"
+                              >
+                                ☰
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCurrentPartIndex(partIndex);
+                                  setCurrentIngredientIndex(ingredientIndex);
+                                  setShowIngredientModal(true);
+                                }}
+                                className={`flex-grow border border-gray-300 p-2 rounded-md text-left ${
+                                  ingredient.ingredientName
+                                    ? "text-gray-900"
+                                    : "text-gray-400"
+                                }`}
+                              >
+                                {ingredient.ingredientName ||
+                                  "재료명을 선택하세요"}
+                              </button>
+
+                              <input
+                                type="number"
+                                min={0}
+                                placeholder="수량"
+                                value={ingredient.requiredQuantity}
+                                onChange={(e) =>
+                                  handlePartIngredientChange(
+                                    partIndex,
+                                    ingredientIndex,
+                                    "requiredQuantity",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-20 rounded-md border border-gray-300 p-2"
+                              />
+
+                              <select
+                                value={ingredient.unit}
+                                onChange={(e) =>
+                                  handlePartIngredientChange(
+                                    partIndex,
+                                    ingredientIndex,
+                                    "unit",
+                                    e.target.value
+                                  )
+                                }
+                                className="rounded-md border border-gray-300 p-2"
+                              >
+                                <option value="G">G</option>
+                                <option value="Kg">Kg</option>
+                                <option value="ml">ml</option>
+                                <option value="개">개</option>
+                              </select>
+
+                              {part.ingredients.length > 1 && (
+                                <button
+                                  onClick={() =>
+                                    removePartIngredient(
+                                      partIndex,
+                                      ingredientIndex
+                                    )
+                                  }
+                                  className="text-[#BA8F66] hover:text-[#966E3D]"
+                                  aria-label="재료 삭제"
+                                  title="재료 삭제"
+                                >
+                                  ×
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}{" "}
+                      {/* <-- map 닫기: ))} */}
+                      {dropProvided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+
+                <Button
+                  variant="link"
+                  size="sm"
+                  onClick={() => addPartIngredient(partIndex)}
+                  type="button"
+                  className="mt-1"
+                >
+                  + 재료 추가
+                </Button>
+              </div>
+            ))}
+
+            <Button variant="outline" size="sm" onClick={addPart} type="button">
+              + 파트 추가
+            </Button>
+          </section>
+        </DragDropContext>
 
         {error && <p className="text-red-500">{error}</p>}
-
         <Button
           onClick={handleSubmit}
           disabled={loading}
@@ -554,7 +619,6 @@ export default function RecipeEditPage() {
         >
           {loading ? "저장 중..." : "수정 완료"}
         </Button>
-
         {/* ────────────────────────────────────────────────────────────────────────── */}
         {/* 재료 검색/추가 모달 */}
         {/* ────────────────────────────────────────────────────────────────────────── */}

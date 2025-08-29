@@ -100,13 +100,36 @@ export default function RecipeDetailPage() {
     }
   };
 
+  const handleProduce = async () => {
+    const body = {
+      recipes: [recipeId],
+    };
+
+    try {
+      const res = await fetchWithAuth(`${apiUrl}/api/plans`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error("제작 요청 실패");
+      const data = await res.json();
+      if (data.resultCode === "OK" && data.data.planId) {
+        router.push(`/plans/${data.data.planId}`);
+      } else {
+        alert("제작 실패: " + data.msg);
+      }
+    } catch (err) {
+      alert("에러 발생: " + (err as Error).message);
+    }
+  };
+
   return (
     <div className="bg-[#FFFDF8] min-h-screen font-sans flex flex-col text-sm">
       <Navbar pageTitle={`레시피 : ${recipe?.name ?? ""}`} />
 
       <main className="px-4 py-6 max-w-3xl mx-auto w-full flex-grow">
         {/* 상단 버튼 바 */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-2">
           <button
             onClick={() => router.push("/recipes/search")}
             className="text-[#FFEED9] bg-[#8D5F45] hover:bg-[#4E342E] font-bold text-base md:text-sm px-5 py-2 rounded-xl"
@@ -114,7 +137,7 @@ export default function RecipeDetailPage() {
             목록으로 돌아가기
           </button>
 
-          <div className="flex gap-4">
+          <div className="flex gap-2">
             <button
               onClick={() => router.push(`/recipes/${recipeId}/edit`)}
               className="bg-[#D7B49E] text-white py-2 px-4 rounded-xl hover:bg-[#BFA37F] transition"
@@ -129,6 +152,15 @@ export default function RecipeDetailPage() {
               {deleting ? "삭제 중..." : "삭제"}
             </button>
           </div>
+        </div>
+
+        <div>
+          <button
+            onClick={handleProduce}
+            className="text-[#FFEED9] bg-[#8D5F45] hover:bg-[#4E342E] font-bold text-base md:text-sm px-5 py-2 rounded-xl"
+          >
+            이 레시피로 베이킹플랜 만들기
+          </button>
         </div>
 
         {loading && (

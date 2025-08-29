@@ -9,6 +9,12 @@ import IngredientSearchModal from "@/components/IngredientSearchModal";
 import RecipeDescription from "@/components/RecipeDescription";
 import Linkify from "linkify-react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "@hello-pangea/dnd";
 
 interface Ingredient {
   ingredientId: number;
@@ -242,6 +248,36 @@ export default function PlanDetailPage() {
     setEditingRecipe(recipe ? structuredClone(recipe) : null);
     setNewGoalQuantity(recipe ? recipe.goalQuantity : "");
   }, [plan, selectedRecipeIndex]);
+
+  const handleDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
+    if (!destination || !editingRecipe) return;
+
+    // droppableId: "part-0", "part-1" 등
+    const partIndex = parseInt(source.droppableId.split("-")[1], 10);
+
+    // 해당 파트의 재료 복사
+    const newIngredients = Array.from(
+      editingRecipe.comparedParts[partIndex].comparedIngredients
+    );
+
+    // 이동할 재료 추출
+    const [moved] = newIngredients.splice(source.index, 1);
+    // 새로운 위치에 삽입
+    newIngredients.splice(destination.index, 0, moved);
+
+    // editingRecipe 상태 업데이트
+    const updatedParts = [...editingRecipe.comparedParts];
+    updatedParts[partIndex] = {
+      ...updatedParts[partIndex],
+      comparedIngredients: newIngredients,
+    };
+
+    setEditingRecipe({
+      ...editingRecipe,
+      comparedParts: updatedParts,
+    });
+  };
 
   // ──────────────────────────────────────────────────────────────────────────────
   // 검색 모달에서 레시피 검색 함수
@@ -957,115 +993,169 @@ export default function PlanDetailPage() {
                         )}
 
                         <div className="space-y-3">
-                          {part.comparedIngredients.map((ing, iIdx) => (
-                            <div
-                              key={ing.ingredientId}
-                              className="bg-[#FFF8F0] rounded-xl shadow-md border px-2 py-3 flex hover:bg-[#FFF0DA] transition"
-                            >
-                              {/* 재료명 */}
-                              {plan.isComplete ? (
-                                <div className="flex-2 min-w-0 text-center">
-                                  {ing.ingredientName}
-                                </div>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setCurrentPartIndex(pIdx);
-                                    setCurrentIngredientIndex(iIdx);
-                                    setShowIngredientModal(true);
-                                  }}
-                                  className={`flex-2 border-b border-gray-300 p-1 ${
-                                    ing.ingredientName
-                                      ? "text-gray-900"
-                                      : "text-gray-400"
-                                  }`}
-                                >
-                                  {ing.ingredientName || "재료명을 선택하세요"}
-                                </button>
-                              )}
+                          <DragDropContext onDragEnd={handleDragEnd}>
+                            {editingRecipe.comparedParts.map((part, pIdx) => (
+                              <Droppable
+                                droppableId={`part-${pIdx}`}
+                                key={pIdx}
+                              >
+                                {(provided) => (
+                                  <div
+                                    {...provided.droppableProps}
+                                    ref={provided.innerRef}
+                                    className="flex flex-col gap-2"
+                                  >
+                                    {part.comparedIngredients.map(
+                                      (ing, iIdx) => (
+                                        <Draggable
+                                          key={ing.ingredientId} // ing.id가 있다면
+                                          draggableId={String(ing.ingredientId)} // string이어야 함
+                                          index={iIdx}
+                                        >
+                                          {(provided) => (
+                                            <div
+                                              ref={provided.innerRef}
+                                              {...provided.draggableProps}
+                                              className="bg-[#FFF8F0] rounded-xl shadow-md border px-2 py-3 flex items-center gap-2 hover:bg-[#FFF0DA] transition"
+                                            >
+                                              {/* 드래그 핸들 */}
+                                              <span
+                                                {...provided.dragHandleProps}
+                                                className="cursor-grab text-gray-400"
+                                              >
+                                                ☰
+                                              </span>
 
-                              {/* 기본 수량 */}
-                              {plan.isComplete ? (
-                                <div className="flex-2 min-w-0 flex items-center justify-center text-center text-gray-600">
-                                  {ing.customizedQuantity.toLocaleString()} g
-                                  {ing.unit !== "g" && ` (${ing.unit})`}
-                                </div>
-                              ) : (
-                                <div className="flex-2 min-w-0 flex items-center justify-center text-center text-gray-600">
-                                  {ing.originalQuantity > 0 ? (
-                                    <>
-                                      {ing.originalQuantity.toLocaleString()} g
-                                      {ing.unit !== "g" && ` (${ing.unit})`}
-                                    </>
-                                  ) : (
-                                    "-"
-                                  )}
-                                </div>
-                              )}
+                                              {/* 재료명 */}
+                                              {plan.isComplete ? (
+                                                <div className="flex-2 min-w-0 text-center">
+                                                  {ing.ingredientName}
+                                                </div>
+                                              ) : (
+                                                <button
+                                                  type="button"
+                                                  onClick={() => {
+                                                    setCurrentPartIndex(pIdx);
+                                                    setCurrentIngredientIndex(
+                                                      iIdx
+                                                    );
+                                                    setShowIngredientModal(
+                                                      true
+                                                    );
+                                                  }}
+                                                  className={`flex-2 border-b border-gray-300 p-1 text-left ${
+                                                    ing.ingredientName
+                                                      ? "text-gray-900"
+                                                      : "text-gray-400"
+                                                  }`}
+                                                >
+                                                  {ing.ingredientName ||
+                                                    "재료명을 선택하세요"}
+                                                </button>
+                                              )}
 
-                              {/* 필요량 + 단위 */}
-                              {!plan.isComplete && (
-                                <div className="flex-3 min-w-0 flex items-center gap-1">
-                                  <div className="relative w-full">
-                                    <input
-                                      type="number"
-                                      className={`
-                                      w-full
-                                      ${ing.unit !== "g" ? "pr-6" : "pr-0"}
-                                      text-center bg-transparent border-b border-gray-300 focus:outline-none
-                                    `}
-                                      value={ing.customizedQuantity}
-                                      onChange={(e) =>
-                                        handleIngredientChange(
-                                          pIdx,
-                                          iIdx,
-                                          "customizedQuantity",
-                                          e.target.value
-                                        )
-                                      }
-                                    />
-                                    {ing.unit !== "g" && (
-                                      <span className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-                                        g
-                                      </span>
+                                              {/* 기본 수량 */}
+                                              {plan.isComplete ? (
+                                                <div className="flex-2 min-w-0 flex items-center justify-center text-gray-600 text-center">
+                                                  {ing.customizedQuantity.toLocaleString()}{" "}
+                                                  g
+                                                  {ing.unit !== "g" &&
+                                                    ` (${ing.unit})`}
+                                                </div>
+                                              ) : (
+                                                <div className="flex-2 min-w-0 flex items-center justify-center text-gray-600 text-center">
+                                                  {ing.originalQuantity > 0
+                                                    ? `${ing.originalQuantity.toLocaleString()} g${
+                                                        ing.unit !== "g"
+                                                          ? ` (${ing.unit})`
+                                                          : ""
+                                                      }`
+                                                    : "-"}
+                                                </div>
+                                              )}
+
+                                              {/* 필요량 + 단위 */}
+                                              {!plan.isComplete && (
+                                                <div className="flex-3 min-w-0 flex items-center gap-1">
+                                                  <div className="relative w-full">
+                                                    <input
+                                                      type="number"
+                                                      className={`w-full ${
+                                                        ing.unit !== "g"
+                                                          ? "pr-6"
+                                                          : "pr-0"
+                                                      } text-center bg-transparent border-b border-gray-300 focus:outline-none`}
+                                                      value={
+                                                        ing.customizedQuantity
+                                                      }
+                                                      onChange={(e) =>
+                                                        handleIngredientChange(
+                                                          pIdx,
+                                                          iIdx,
+                                                          "customizedQuantity",
+                                                          e.target.value
+                                                        )
+                                                      }
+                                                    />
+                                                    {ing.unit !== "g" && (
+                                                      <span className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                                        g
+                                                      </span>
+                                                    )}
+                                                  </div>
+
+                                                  <div className="inline-flex items-center">
+                                                    <span>(</span>
+                                                    <select
+                                                      className="border border-gray-300 rounded px-1 py-1 mx-1"
+                                                      value={ing.unit}
+                                                      onChange={(e) =>
+                                                        handleIngredientChange(
+                                                          pIdx,
+                                                          iIdx,
+                                                          "unit",
+                                                          e.target.value
+                                                        )
+                                                      }
+                                                    >
+                                                      <option value="g">
+                                                        g
+                                                      </option>
+                                                      <option value="ml">
+                                                        ml
+                                                      </option>
+                                                      <option value="개">
+                                                        개
+                                                      </option>
+                                                    </select>
+                                                    <span>)</span>
+                                                  </div>
+                                                </div>
+                                              )}
+
+                                              {/* 삭제 버튼 */}
+                                              {!plan.isComplete && (
+                                                <button
+                                                  className="w-6 pl-1 text-center text-xl text-red-500 font-semibold"
+                                                  onClick={() =>
+                                                    removeIngredient(pIdx, iIdx)
+                                                  }
+                                                >
+                                                  &times;
+                                                </button>
+                                              )}
+                                            </div>
+                                          )}
+                                        </Draggable>
+                                      )
                                     )}
+                                    {provided.placeholder}
                                   </div>
+                                )}
+                              </Droppable>
+                            ))}
+                          </DragDropContext>
 
-                                  <div className="inline-flex items-center">
-                                    <span>(</span>
-                                    <select
-                                      className="border border-gray-300 rounded px-1 py-1 mx-1"
-                                      value={ing.unit}
-                                      onChange={(e) =>
-                                        handleIngredientChange(
-                                          pIdx,
-                                          iIdx,
-                                          "unit",
-                                          e.target.value
-                                        )
-                                      }
-                                    >
-                                      <option value="g">g</option>
-                                      <option value="ml">ml</option>
-                                      <option value="개">개</option>
-                                    </select>
-                                    <span>)</span>
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* 삭제 */}
-                              {!plan.isComplete && (
-                                <button
-                                  className="w-6 pl-1 text-center text-xl text-red-500 font-semibold"
-                                  onClick={() => removeIngredient(pIdx, iIdx)}
-                                >
-                                  &times;
-                                </button>
-                              )}
-                            </div>
-                          ))}
                           {/* 해당 파트에 재료 추가 */}
                           {!plan.isComplete && (
                             <div className="flex justify-end -mt-3">

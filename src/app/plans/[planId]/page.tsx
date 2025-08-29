@@ -168,6 +168,10 @@ export default function PlanDetailPage() {
   const [currentIngredientIndex, setCurrentIngredientIndex] = useState<
     number | null
   >(null);
+  const [replaceTarget, setReplaceTarget] = useState<{
+    ingredientId?: number | null;
+    name: string;
+  } | null>(null);
 
   // 2) 파트별 배율 입력값 배열 (각 파트마다 입력할 퍼센트)
   const [partPercents, setPartPercents] = useState<number[]>([]);
@@ -177,6 +181,15 @@ export default function PlanDetailPage() {
     target: "_blank",
     className: "text-blue-800 underline hover:text-blue-400",
   };
+
+  const [shouldAutoSubmit, setShouldAutoSubmit] = useState(false);
+
+  useEffect(() => {
+    if (shouldAutoSubmit && editingRecipe) {
+      handleIngredientsSubmit();
+      setShouldAutoSubmit(false);
+    }
+  }, [editingRecipe, shouldAutoSubmit]);
 
   // ──────────────────────────────────────────────────────────────────────────────
   // 플랜 상세 조회 함수
@@ -496,6 +509,80 @@ export default function PlanDetailPage() {
     }
   };
 
+  const handleIngredientSelect = (selected: {
+    ingredientId?: number;
+    ingredientName: string;
+  }) => {
+    // 교체 모드 (부족한 재료에서 연 경우)
+    if (replaceTarget && editingRecipe) {
+      if (
+        !window.confirm(
+          `${replaceTarget.name}을(를) ${selected.ingredientName}으로 전체 교체하시겠습니까?`
+        )
+      ) {
+        setReplaceTarget(null);
+        setShowIngredientModal(false);
+        return;
+      }
+
+      const updatedParts = editingRecipe.comparedParts.map((part) => ({
+        ...part,
+        comparedIngredients: part.comparedIngredients.map((ing) => {
+          const matches =
+            (replaceTarget.ingredientId != null &&
+              ing.ingredientId === replaceTarget.ingredientId) ||
+            (!replaceTarget.ingredientId &&
+              ing.ingredientName === replaceTarget.name);
+
+          if (!matches) return ing;
+
+          return {
+            ...ing,
+            ingredientId: selected.ingredientId ?? ing.ingredientId,
+            ingredientName: selected.ingredientName,
+          };
+        }),
+      }));
+
+      setEditingRecipe((prev) =>
+        prev ? { ...prev, comparedParts: updatedParts } : prev
+      );
+      setShowIngredientModal(false);
+      setReplaceTarget(null);
+
+      // 자동 제출 예약
+      setShouldAutoSubmit(true);
+      return;
+    }
+
+    // 개별 선택 모드 (원래 동작)
+    if (currentPartIndex == null || currentIngredientIndex == null) {
+      setShowIngredientModal(false);
+      return;
+    }
+
+    const updatedParts = [...(editingRecipe?.comparedParts ?? [])];
+    updatedParts[currentPartIndex].comparedIngredients[currentIngredientIndex] =
+      {
+        ...updatedParts[currentPartIndex].comparedIngredients[
+          currentIngredientIndex
+        ],
+        ingredientId:
+          selected.ingredientId ??
+          updatedParts[currentPartIndex].comparedIngredients[
+            currentIngredientIndex
+          ].ingredientId,
+        ingredientName: selected.ingredientName,
+      };
+
+    setEditingRecipe((prev) =>
+      prev ? { ...prev, comparedParts: updatedParts } : prev
+    );
+    setShowIngredientModal(false);
+    setCurrentPartIndex(null);
+    setCurrentIngredientIndex(null);
+  };
+
   // ──────────────────────────────────────────────────────────────────────────────
   // RESET 핸들러 (기존)
   // ──────────────────────────────────────────────────────────────────────────────
@@ -725,10 +812,11 @@ export default function PlanDetailPage() {
                 </h2>
                 <div className="space-y-3">
                   <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-6 py-2 flex items-center justify-between text-[#4E342E] font-semibold">
-                    <div className="flex-1 text-center">재료명</div>
-                    <div className="flex-1 text-center">필요량</div>
-                    <div className="flex-1 text-center">보유량</div>
-                    <div className="flex-1 text-center">부족량</div>
+                    <div className="flex-5 text-center">재료명</div>
+                    <div className="flex-5 text-center">필요량</div>
+                    <div className="flex-5 text-center">보유량</div>
+                    <div className="flex-5 text-center">부족량</div>
+                    <div className="flex-2 text-center"></div>
                   </div>
                   {plan.lackIngredients.map((item) => (
                     <div
@@ -755,6 +843,22 @@ export default function PlanDetailPage() {
                       <div className="text-center font-semibold text-red-500 flex-1">
                         {item.lackingQuantity.toLocaleString()}
                       </div>
+
+                      <button
+                        type="button"
+                        className="px-3 py-1 border rounded-md text-sm bg-white hover:bg-gray-100"
+                        onClick={(e) => {
+                          e.stopPropagation(); // 부모 onClick이 실행되지 않게 함
+                          e.preventDefault(); // (선택) 기본 동작 차단
+                          setReplaceTarget({
+                            ingredientId: item.ingredientId,
+                            name: item.name,
+                          });
+                          setShowIngredientModal(true);
+                        }}
+                      >
+                        교체하기
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -1187,6 +1291,7 @@ export default function PlanDetailPage() {
                     {/* 저장하기 */}
                     {!plan.isComplete && (
                       <Button
+                        id="save-recipe-btn"
                         onClick={handleIngredientsSubmit}
                         disabled={isSavingRecipe}
                         className="mt-2 py-5 w-full bg-[#B9896D] text-white rounded-xl"
@@ -1483,41 +1588,18 @@ export default function PlanDetailPage() {
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* 재료 검색/추가 모달 */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      {showIngredientModal &&
-        currentIngredientIndex !== null &&
-        editingRecipe && (
-          <IngredientSearchModal
-            isOpen={showIngredientModal}
-            onClose={() => setShowIngredientModal(false)}
-            onSelect={(ingredient) => {
-              if (currentPartIndex === null || currentIngredientIndex === null)
-                return;
-
-              // 기존 파트 복사
-              const updatedParts = [...editingRecipe.comparedParts];
-
-              // 해당 위치 재료명 수정
-              updatedParts[currentPartIndex].comparedIngredients[
-                currentIngredientIndex
-              ].ingredientName = ingredient.ingredientName;
-
-              // 상태 업데이트
-              setEditingRecipe((prev) => {
-                if (!prev) return prev; // null 체크
-
-                return {
-                  ...prev,
-                  comparedParts: updatedParts,
-                };
-              });
-
-              // 모달 닫기 및 인덱스 초기화
-              setShowIngredientModal(false);
-              setCurrentPartIndex(null);
-              setCurrentIngredientIndex(null);
-            }}
-          />
-        )}
+      {showIngredientModal && editingRecipe && (
+        <IngredientSearchModal
+          isOpen={showIngredientModal}
+          onClose={() => {
+            setShowIngredientModal(false);
+            setReplaceTarget(null);
+            setCurrentPartIndex(null);
+            setCurrentIngredientIndex(null);
+          }}
+          onSelect={handleIngredientSelect}
+        />
+      )}
     </>
   );
 }

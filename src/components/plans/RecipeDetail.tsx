@@ -64,23 +64,26 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
     const { source, destination } = result;
     if (!destination || !editingRecipe) return;
 
-    // droppableId: "part-0", "part-1" 등
-    const partIndex = parseInt(source.droppableId.split("-")[1], 10);
+    const sourcePart = parseInt(source.droppableId.split("-")[1], 10);
+    const destPart = parseInt(destination.droppableId.split("-")[1], 10);
 
-    // 해당 파트의 재료 복사
+    // 다른 파트로 옮기려는 경우 차단
+    if (sourcePart !== destPart) {
+      toast.error("다른 파트로 이동할 수 없습니다.");
+      return;
+    }
+
+    // 같은 파트 내에서 순서 변경 처리
     const newIngredients = Array.from(
-      editingRecipe.comparedParts[partIndex].comparedIngredients
+      editingRecipe.comparedParts[sourcePart].comparedIngredients
     );
 
-    // 이동할 재료 추출
     const [moved] = newIngredients.splice(source.index, 1);
-    // 새로운 위치에 삽입
     newIngredients.splice(destination.index, 0, moved);
 
-    // editingRecipe 상태 업데이트
     const updatedParts = [...editingRecipe.comparedParts];
-    updatedParts[partIndex] = {
-      ...updatedParts[partIndex],
+    updatedParts[sourcePart] = {
+      ...updatedParts[sourcePart],
       comparedIngredients: newIngredients,
     };
 
@@ -411,12 +414,13 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
         <h4 className="font-semibold mb-2">재료 목록</h4>
 
         <div className="space-y-6">
-          {editingRecipe.comparedParts.map((part, pIdx) => (
-            <div key={pIdx}>
-              <div className="flex gap-6 items-end justify-between mb-2">
-                <div className="flex-grow flex flex-col">
-                  {!plan.isComplete ? (
-                    <div>
+          {/* DragDropContext는 파트 목록 전체를 한 번만 감싼다 */}
+          <DragDropContext onDragEnd={handleDragEnd}>
+            {editingRecipe.comparedParts.map((part, pIdx) => (
+              <div key={pIdx}>
+                <div className="flex gap-6 items-end justify-between mb-2">
+                  <div className="flex-grow flex flex-col">
+                    {!plan.isComplete ? (
                       <input
                         type="text"
                         value={part.partName}
@@ -426,193 +430,186 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
                         }
                         className="border w-full rounded-lg border-gray-200 px-2 py-1 text-lg font-semibold"
                       />
-                    </div>
-                  ) : (
-                    <>
-                      {part.partName !== "기본" && (
+                    ) : (
+                      part.partName !== "기본" && (
                         <h5 className="text-lg font-semibold">
                           {part.partName}
                         </h5>
-                      )}
-                    </>
-                  )}
-                  <div className="text-gray-400">
-                    파트 배율 : {part.percent} %
+                      )
+                    )}
+                    <div className="text-gray-400">
+                      파트 배율 : {part.percent} %
+                    </div>
                   </div>
+
+                  {editingRecipe.comparedParts.length > 1 &&
+                    !plan.isComplete && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removePart(pIdx)}
+                        type="button"
+                      >
+                        파트 삭제
+                      </Button>
+                    )}
                 </div>
 
-                {editingRecipe.comparedParts.length > 1 && !plan.isComplete && (
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removePart(pIdx)}
-                    type="button"
-                  >
-                    파트 삭제
-                  </Button>
-                )}
-              </div>
-
-              {plan.isComplete ? (
-                <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-3 flex items-center justify-between text-[#4E342E] font-semibold">
-                  <div className="flex-1 min-w-0 text-center">재료명</div>
-                  <div className="flex-1 min-w-0 text-center">필요수량</div>
-                </div>
-              ) : (
-                <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-3 flex items-center justify-between text-[#4E342E] font-semibold">
-                  <div className="flex-1 min-w-0 text-center">재료명</div>
-                  <div className="flex-1 min-w-0 text-center">기본수량</div>
-                  <div className="flex-1 min-w-0 text-center">필요수량</div>
-                  <div className="w-12 min-w-0 text-center"></div>
-                </div>
-              )}
-
-              <div className="space-y-3">
-                <DragDropContext onDragEnd={handleDragEnd}>
-                  {editingRecipe.comparedParts.map((part, pIdx) => (
-                    <Droppable droppableId={`part-${pIdx}`} key={pIdx}>
-                      {(provided) => (
-                        <div
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
-                          className="flex flex-col gap-2"
-                        >
-                          {part.comparedIngredients.map((ing, iIdx) => (
-                            <Draggable
-                              key={ing.ingredientId} // ing.id가 있다면
-                              draggableId={String(ing.ingredientId)} // string이어야 함
-                              index={iIdx}
-                            >
-                              {(provided) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  className="bg-[#FFF8F0] rounded-xl shadow-md border px-2 py-3 flex items-center gap-2 hover:bg-[#FFF0DA] transition"
-                                >
-                                  {/* 드래그 핸들 */}
-                                  <span
-                                    {...provided.dragHandleProps}
-                                    className="cursor-grab text-gray-400"
-                                  >
-                                    ☰
-                                  </span>
-
-                                  {/* 재료명 */}
-                                  {plan.isComplete ? (
-                                    <div className="flex-2 min-w-0 text-center">
-                                      {ing.ingredientName}
-                                    </div>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setCurrentPartIndex(pIdx);
-                                        setCurrentIngredientIndex(iIdx);
-                                        setShowIngredientModal(true);
-                                      }}
-                                      className={`flex-2 border-b border-gray-300 p-1 text-left ${
-                                        ing.ingredientName
-                                          ? "text-gray-900"
-                                          : "text-gray-400"
-                                      }`}
-                                    >
-                                      {ing.ingredientName ||
-                                        "재료명을 선택하세요"}
-                                    </button>
-                                  )}
-
-                                  {/* 기본 수량 */}
-                                  {plan.isComplete ? (
-                                    <div className="flex-2 min-w-0 flex items-center justify-center text-gray-600 text-center">
-                                      {ing.customizedQuantity.toLocaleString()}{" "}
-                                      g{ing.unit !== "g" && ` (${ing.unit})`}
-                                    </div>
-                                  ) : (
-                                    <div className="flex-2 min-w-0 flex items-center justify-center text-gray-600 text-center">
-                                      {ing.originalQuantity > 0
-                                        ? `${ing.originalQuantity.toLocaleString()} g${
-                                            ing.unit !== "g"
-                                              ? ` (${ing.unit})`
-                                              : ""
-                                          }`
-                                        : "-"}
-                                    </div>
-                                  )}
-
-                                  {/* 필요량 + 단위 */}
-                                  {!plan.isComplete && (
-                                    <div className="flex-3 min-w-0 flex items-center gap-1">
-                                      <div className="relative w-full">
-                                        <input
-                                          type="number"
-                                          className={`w-full ${
-                                            ing.unit !== "g" ? "pr-6" : "pr-0"
-                                          } text-center bg-transparent border-b border-gray-300 focus:outline-none`}
-                                          value={ing.customizedQuantity}
-                                          onChange={(e) =>
-                                            handleIngredientChange(
-                                              pIdx,
-                                              iIdx,
-                                              "customizedQuantity",
-                                              e.target.value
-                                            )
-                                          }
-                                        />
-                                        {ing.unit !== "g" && (
-                                          <span className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-                                            g
-                                          </span>
-                                        )}
-                                      </div>
-
-                                      <div className="inline-flex items-center">
-                                        <span>(</span>
-                                        <select
-                                          className="border border-gray-300 rounded px-1 py-1 mx-1"
-                                          value={ing.unit}
-                                          onChange={(e) =>
-                                            handleIngredientChange(
-                                              pIdx,
-                                              iIdx,
-                                              "unit",
-                                              e.target.value
-                                            )
-                                          }
-                                        >
-                                          <option value="g">g</option>
-                                          <option value="ml">ml</option>
-                                          <option value="개">개</option>
-                                        </select>
-                                        <span>)</span>
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {/* 삭제 버튼 */}
-                                  {!plan.isComplete && (
-                                    <button
-                                      className="w-6 pl-1 text-center text-xl text-red-500 font-semibold"
-                                      onClick={() =>
-                                        removeIngredient(pIdx, iIdx)
-                                      }
-                                    >
-                                      &times;
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
+                {/* 각 파트는 자신만의 Droppable을 가진다 */}
+                <Droppable droppableId={`part-${pIdx}`} key={`drop-${pIdx}`}>
+                  {(provided) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className="flex flex-col gap-2"
+                    >
+                      {/* 헤더(완료/편집 모드에 따라) */}
+                      {plan.isComplete ? (
+                        <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-3 flex items-center justify-between text-[#4E342E] font-semibold">
+                          <div className="flex-1 min-w-0 text-center">
+                            재료명
+                          </div>
+                          <div className="flex-1 min-w-0 text-center">
+                            필요수량
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-[#FFD8A9] rounded-xl shadow-md border px-2 py-2 mb-3 flex items-center justify-between text-[#4E342E] font-semibold">
+                          <div className="flex-1 min-w-0 text-center">
+                            재료명
+                          </div>
+                          <div className="flex-1 min-w-0 text-center">
+                            기본수량
+                          </div>
+                          <div className="flex-1 min-w-0 text-center">
+                            필요수량
+                          </div>
+                          <div className="w-12 min-w-0 text-center"></div>
                         </div>
                       )}
-                    </Droppable>
-                  ))}
-                </DragDropContext>
+
+                      {part.comparedIngredients.map((ing, iIdx) => (
+                        <Draggable
+                          key={ing.ingredientId}
+                          draggableId={String(ing.ingredientId)}
+                          index={iIdx}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className="bg-[#FFF8F0] rounded-xl shadow-md border px-2 py-3 flex items-center gap-2 hover:bg-[#FFF0DA] transition"
+                            >
+                              <span
+                                {...provided.dragHandleProps}
+                                className="cursor-grab text-gray-400"
+                              >
+                                ☰
+                              </span>
+
+                              {/* 재료명 */}
+                              {!plan.isComplete ? (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setCurrentPartIndex(pIdx);
+                                    setCurrentIngredientIndex(iIdx);
+                                    setShowIngredientModal(true);
+                                  }}
+                                  className={`flex-1 border-b border-gray-300 p-1 text-left ${
+                                    ing.ingredientName
+                                      ? "text-gray-900"
+                                      : "text-gray-400"
+                                  }`}
+                                >
+                                  {ing.ingredientName || "재료명을 선택하세요"}
+                                </button>
+                              ) : (
+                                <div className="flex-1 min-w-0 text-center">
+                                  {ing.ingredientName}
+                                </div>
+                              )}
+
+                              {/* 기본 수량 */}
+                              <div className="flex-1 min-w-0 flex items-center justify-center text-gray-600 text-center">
+                                {ing.originalQuantity > 0
+                                  ? `${ing.originalQuantity.toLocaleString()} g${
+                                      ing.unit !== "g" ? ` (${ing.unit})` : ""
+                                    }`
+                                  : "-"}
+                              </div>
+
+                              {/* 필요량 + 단위 (편집시) */}
+                              {!plan.isComplete && (
+                                <div className="flex-1 min-w-0 flex items-center gap-1">
+                                  <div className="relative w-full">
+                                    <input
+                                      type="number"
+                                      className={`w-full ${
+                                        ing.unit !== "g" ? "pr-6" : "pr-0"
+                                      } text-center bg-transparent border-b border-gray-300 focus:outline-none`}
+                                      value={ing.customizedQuantity}
+                                      onChange={(e) =>
+                                        handleIngredientChange(
+                                          pIdx,
+                                          iIdx,
+                                          "customizedQuantity",
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                    {ing.unit !== "g" && (
+                                      <span className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                        g
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <div className="inline-flex items-center">
+                                    <span>(</span>
+                                    <select
+                                      className="border border-gray-300 rounded px-1 py-1 mx-1"
+                                      value={ing.unit}
+                                      onChange={(e) =>
+                                        handleIngredientChange(
+                                          pIdx,
+                                          iIdx,
+                                          "unit",
+                                          e.target.value
+                                        )
+                                      }
+                                    >
+                                      <option value="g">g</option>
+                                      <option value="ml">ml</option>
+                                      <option value="개">개</option>
+                                    </select>
+                                    <span>)</span>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* 삭제 버튼 */}
+                              {!plan.isComplete && (
+                                <button
+                                  className="w-6 pl-1 text-center text-xl text-red-500 font-semibold"
+                                  onClick={() => removeIngredient(pIdx, iIdx)}
+                                >
+                                  &times;
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
 
                 {/* 해당 파트에 재료 추가 */}
                 {!plan.isComplete && (
-                  <div className="flex justify-end -mt-3">
+                  <div className="flex justify-end mt-3">
                     <Button
                       variant="link"
                       size="sm"
@@ -624,28 +621,29 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
                   </div>
                 )}
               </div>
-            </div>
-          ))}
+            ))}
+          </DragDropContext>
 
+          {/* 파트 추가 버튼 */}
           {!plan.isComplete && (
             <Button variant="outline" size="sm" onClick={addPart} type="button">
               + 파트 추가
             </Button>
           )}
-
-          {/* 저장하기 */}
-          {!plan.isComplete && (
-            <Button
-              id="save-recipe-btn"
-              onClick={handleIngredientsSubmit}
-              disabled={isSavingRecipe}
-              className="mt-2 py-5 w-full bg-[#B9896D] text-white rounded-xl"
-            >
-              {isSavingRecipe ? "저장중…" : "레시피 저장하기"}
-            </Button>
-          )}
         </div>
       </div>
+
+      {/* 저장하기 */}
+      {!plan.isComplete && (
+        <Button
+          id="save-recipe-btn"
+          onClick={handleIngredientsSubmit}
+          disabled={isSavingRecipe}
+          className="mt-2 py-5 w-full bg-[#B9896D] text-white rounded-xl"
+        >
+          {isSavingRecipe ? "저장중…" : "레시피 저장하기"}
+        </Button>
+      )}
     </div>
   );
 };

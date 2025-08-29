@@ -13,6 +13,7 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
+import { useRef } from "react";
 
 interface Ingredient {
   ingredientName: string;
@@ -58,6 +59,8 @@ export default function RecipeForm() {
   const [currentIngredientIndex, setCurrentIngredientIndex] = useState<
     number | null
   >(null);
+
+  const ingredientAmountRefs = useRef<(HTMLInputElement | null)[][]>([]);
 
   useEffect(() => {
     fetchWithAuth(`${apiUrl}/api/categories`)
@@ -470,6 +473,18 @@ export default function RecipeForm() {
                                       )
                                     }
                                     className="border border-gray-300 p-1 rounded-md w-24"
+                                    ref={(el) => {
+                                      if (
+                                        !ingredientAmountRefs.current[partIndex]
+                                      ) {
+                                        ingredientAmountRefs.current[
+                                          partIndex
+                                        ] = [];
+                                      }
+                                      ingredientAmountRefs.current[partIndex][
+                                        i
+                                      ] = el;
+                                    }}
                                   />
 
                                   <select
@@ -626,6 +641,14 @@ export default function RecipeForm() {
               setParts(newParts);
 
               setShowIngredientModal(false);
+
+              // 포커스 이동 (DOM 업데이트 후)
+              setTimeout(() => {
+                ingredientAmountRefs.current[currentPartIndex][
+                  currentIngredientIndex
+                ]?.focus();
+              }, 0);
+
               setCurrentPartIndex(null);
               setCurrentIngredientIndex(null);
             }}

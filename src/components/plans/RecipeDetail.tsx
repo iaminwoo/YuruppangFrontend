@@ -410,7 +410,7 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
       )}
 
       {/* 재료 목록 (PART별) */}
-      <div>
+      <div className="overflow-visible relative min-h-[400px] mb-8">
         <h4 className="font-semibold mb-2">재료 목록</h4>
 
         <div className="space-y-6">
@@ -461,7 +461,7 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
                     <div
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className="flex flex-col gap-2"
+                      className="flex flex-col space-y-2 min-h-[40px]"
                     >
                       {/* 헤더(완료/편집 모드에 따라) */}
                       {plan.isComplete ? (
@@ -490,15 +490,15 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
 
                       {part.comparedIngredients.map((ing, iIdx) => (
                         <Draggable
-                          key={ing.ingredientId}
-                          draggableId={String(ing.ingredientId)}
+                          key={`${pIdx}-${iIdx}`}
+                          draggableId={`${pIdx}-${iIdx}`}
                           index={iIdx}
                         >
                           {(provided) => (
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
-                              className="bg-[#FFF8F0] rounded-xl shadow-md border px-2 py-3 flex items-center gap-2 hover:bg-[#FFF0DA] transition"
+                              className="bg-[#FFF8F0] rounded-xl shadow-md border px-2 py-3 flex items-center gap-2 hover:bg-[#FFF0DA]"
                             >
                               <span
                                 {...provided.dragHandleProps}
@@ -602,7 +602,9 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
                         </Draggable>
                       ))}
 
-                      {provided.placeholder}
+                      <div className="transition-none">
+                        {provided.placeholder}
+                      </div>
                     </div>
                   )}
                 </Droppable>

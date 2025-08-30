@@ -410,11 +410,10 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
       )}
 
       {/* 재료 목록 (PART별) */}
-      <div className="overflow-visible relative min-h-[400px] mb-8">
+      <div className="overflow-visible relative min-h-[400px]">
         <h4 className="font-semibold mb-2">재료 목록</h4>
 
         <div className="space-y-6">
-          {/* DragDropContext는 파트 목록 전체를 한 번만 감싼다 */}
           <DragDropContext onDragEnd={handleDragEnd}>
             {editingRecipe.comparedParts.map((part, pIdx) => (
               <div key={pIdx}>
@@ -633,19 +632,21 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
             </Button>
           )}
         </div>
-      </div>
 
-      {/* 저장하기 */}
-      {!plan.isComplete && (
-        <Button
-          id="save-recipe-btn"
-          onClick={handleIngredientsSubmit}
-          disabled={isSavingRecipe}
-          className="mt-2 py-5 w-full bg-[#B9896D] text-white rounded-xl"
-        >
-          {isSavingRecipe ? "저장중…" : "레시피 저장하기"}
-        </Button>
-      )}
+        {/* 저장하기 */}
+        {!plan.isComplete && (
+          <div className="sticky bottom-2 mt-4 pt-2">
+            <Button
+              id="save-recipe-btn"
+              onClick={handleIngredientsSubmit}
+              disabled={isSavingRecipe}
+              className="w-full py-5 bg-[#B9896D] text-white rounded-xl"
+            >
+              {isSavingRecipe ? "저장중…" : "레시피 저장하기"}
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

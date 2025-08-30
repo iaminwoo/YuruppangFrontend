@@ -14,6 +14,7 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import { useRef } from "react";
+import AutoRegisterModal from "@/components/recipes/AutoRegisterModal";
 
 interface Ingredient {
   ingredientName: string;
@@ -30,6 +31,14 @@ interface Part {
 interface Category {
   categoryId: number;
   categoryName: string;
+}
+
+interface AutoRegisterData {
+  name?: string;
+  description?: string;
+  outputQuantity?: number | string;
+  categoryId?: number;
+  parts?: Part[];
 }
 
 export default function RecipeForm() {
@@ -61,6 +70,8 @@ export default function RecipeForm() {
   >(null);
 
   const ingredientAmountRefs = useRef<(HTMLInputElement | null)[][]>([]);
+
+  const [showAutoRegisterModal, setShowAutoRegisterModal] = useState(false);
 
   useEffect(() => {
     fetchWithAuth(`${apiUrl}/api/categories`)
@@ -148,14 +159,24 @@ export default function RecipeForm() {
     const { source, destination } = result;
     if (!destination) return;
 
-    // droppableId에서 partIndex 추출
-    const partIndex = parseInt(source.droppableId.split("-")[1], 10);
+    const sourcePartIndex = parseInt(source.droppableId.split("-")[1], 10);
+    const destPartIndex = parseInt(destination.droppableId.split("-")[1], 10);
 
-    const newIngredients = Array.from(parts[partIndex].ingredients);
-    const [moved] = newIngredients.splice(source.index, 1);
-    newIngredients.splice(destination.index, 0, moved);
+    const sourceIngredients = Array.from(parts[sourcePartIndex].ingredients);
+    const [moved] = sourceIngredients.splice(source.index, 1);
 
-    updatePartIngredients(partIndex, newIngredients);
+    if (sourcePartIndex === destPartIndex) {
+      // 같은 파트 안에서 이동
+      sourceIngredients.splice(destination.index, 0, moved);
+      updatePartIngredients(sourcePartIndex, sourceIngredients);
+    } else {
+      // 다른 파트로 이동
+      const destIngredients = Array.from(parts[destPartIndex].ingredients);
+      destIngredients.splice(destination.index, 0, moved);
+
+      updatePartIngredients(sourcePartIndex, sourceIngredients);
+      updatePartIngredients(destPartIndex, destIngredients);
+    }
   };
 
   const updatePartIngredients = (
@@ -296,9 +317,16 @@ export default function RecipeForm() {
     <div className="bg-[#FFFDF8] min-h-screen font-sans text-sm">
       <Navbar pageTitle="레시피 추가 페이지" />
       <main className="px-4 py-6 max-w-3xl mx-auto w-full space-y-6">
-        <h2 className="text-xl font-bold text-[#4E342E] mb-4 mt-2">
-          레시피 등록
-        </h2>
+        <div className="flex justify-between items-center mb-2 mt-2">
+          <h2 className="text-xl font-bold text-[#4E342E]">레시피 등록</h2>
+
+          <Button
+            className="bg-[#B9896D] text-white rounded-xl"
+            onClick={() => setShowAutoRegisterModal(true)}
+          >
+            레시피 자동 등록
+          </Button>
+        </div>
 
         {/* 1. 이름 */}
         <div>
@@ -590,6 +618,20 @@ export default function RecipeForm() {
         </Button>
       </main>
 
+      {/* 레시피 자동 등록 모달 */}
+      <AutoRegisterModal
+        isOpen={showAutoRegisterModal}
+        onClose={() => setShowAutoRegisterModal(false)}
+        onSuccess={(data: AutoRegisterData) => {
+          if (data.name) setName(data.name);
+          if (data.description) setDescription(data.description);
+          if (data.outputQuantity) setOutputQuantity(data.outputQuantity);
+          if (data.categoryId) setSelectedCategoryId(data.categoryId);
+          if (data.parts) setParts(data.parts);
+          alert("레시피 자동 등록 완료!");
+        }}
+      />
+
       {showCategoryModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
@@ -614,7 +656,7 @@ export default function RecipeForm() {
               </Button>
               <Button
                 onClick={handleCreateCategory}
-                className="bg-blue-500 text-white"
+                className="bg-[#B9896D] text-white"
                 type="button"
               >
                 저장

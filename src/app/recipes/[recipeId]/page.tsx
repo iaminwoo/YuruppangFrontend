@@ -226,9 +226,9 @@ export default function RecipeDetailPage() {
                     <div className="min-w-[80px] text-center">재고 수량</div>
                   </div>
 
-                  {part.ingredients.map((item) => (
+                  {part.ingredients.map((item, index) => (
                     <div
-                      key={item.ingredientId}
+                      key={`${item.ingredientId}-${index}`}
                       className="bg-[#FFF8F0] rounded-xl shadow-md border px-6 py-3 flex items-center justify-between hover:bg-[#FFF0DA] transition"
                     >
                       <div className="text-center font-semibold text-[#4E342E] min-w-[100px]">

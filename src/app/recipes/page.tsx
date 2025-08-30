@@ -99,7 +99,7 @@ export default function RecipePage() {
             className="flex-2 bg-[#D7B49E] text-white py-6 rounded-xl"
             onClick={() => router.push("/recipes/search")}
           >
-            레시피 검색
+            레시피 목록
           </Button>
           <Button
             className="flex-2 bg-[#C89F84] text-white py-6 rounded-xl"

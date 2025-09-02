@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import Image from "next/image";
 
 interface Ingredient {
   ingredientName: string;
@@ -108,6 +109,18 @@ export default function AutoRegisterModal({
             {loading ? "불러오는 중..." : "불러오기"}
           </Button>
         </div>
+
+        {loading && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <Image
+              src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGV2bnljM29iamlzeGY2eW9pazhsem5ya3BqbTRpZjB5dXFtcjRtcyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/6C9CMGMFtzzbO/giphy.gif"
+              alt="Loading..."
+              className="rounded-xl"
+              width={200}
+              height={200}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

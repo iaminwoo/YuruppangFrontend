@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import Image from "next/image";
-import { setuid } from "process";
 
 interface Ingredient {
   ingredientName: string;
@@ -45,7 +44,7 @@ export default function AutoRegisterModal({
   if (!isOpen) return null;
 
   const handleSubmit = async () => {
-    if (!text.trim()) {
+    if (!text.trim() && !url.trim()) {
       alert("레시피를 입력하세요.");
       return;
     }
@@ -128,7 +127,11 @@ export default function AutoRegisterModal({
         </div>
 
         {loading && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/40 flex flex-col items-center justify-center z-50">
+            <p className="text-white mb-2 text-lg">
+              레시피를 불러오는 중입니다...<br></br>
+              귀여운 빵아지들 보고 계셔요...
+            </p>
             <Image
               src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGV2bnljM29iamlzeGY2eW9pazhsem5ya3BqbTRpZjB5dXFtcjRtcyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/6C9CMGMFtzzbO/giphy.gif"
               alt="Loading..."

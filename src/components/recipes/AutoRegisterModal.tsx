@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import Image from "next/image";
+import { setuid } from "process";
 
 interface Ingredient {
   ingredientName: string;
@@ -37,6 +38,7 @@ export default function AutoRegisterModal({
   onSuccess,
 }: AutoRegisterModalProps) {
   const [text, setText] = useState("");
+  const [url, setUrl] = useState(""); // URL state 추가
   const [loading, setLoading] = useState(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -54,7 +56,7 @@ export default function AutoRegisterModal({
       const res = await fetchWithAuth(`${apiUrl}/api/recipes/auto-register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: text.trim() }),
+        body: JSON.stringify({ text: text.trim(), url: url.trim() }),
       });
 
       if (!res.ok) throw new Error("레시피 자동 등록 실패");
@@ -79,6 +81,7 @@ export default function AutoRegisterModal({
 
   const handleClose = () => {
     setText("");
+    setUrl("");
     setLoading(false);
     onClose();
   };
@@ -88,14 +91,28 @@ export default function AutoRegisterModal({
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <h2 className="text-lg font-semibold mb-4">레시피 자동 등록</h2>
         <p className="mb-4">
-          레시피를 줄글로 입력하시면 자동으로 재료가 입력됩니다.
+          유튜브 영상의 주소를 입력하시거나 레시피를 입력해주세요.
         </p>
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="레시피 입력"
-          className="border border-gray-300 p-3 w-full rounded-md mb-4 resize-none h-32"
-        />
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-1">유튜브 영상</label>
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="URL 입력"
+            className="border border-gray-300 p-3 w-full rounded-md"
+          />
+        </div>
+        {/* 텍스트 입력 */}
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-1">레시피 내용</label>
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="레시피 입력"
+            className="border border-gray-300 p-3 w-full rounded-md resize-none h-32"
+          />
+        </div>
         <div className="flex justify-end space-x-2">
           <Button variant="outline" onClick={handleClose} type="button">
             취소

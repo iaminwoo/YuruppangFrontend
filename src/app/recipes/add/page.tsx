@@ -732,21 +732,19 @@ export default function RecipeForm() {
           />
         )}
 
-      {showPanModal && (
-        <PanSearchModal
-          isOpen={showPanModal}
-          onClose={() => setShowPanModal(false)}
-          onSelect={(selectedPan) => {
-            setSelectedPan(selectedPan);
-            setShowIngredientModal(false);
-          }}
-          onCreatePan={(type) => {
-            setShowPanModal(false);
-            setSelectedType(type);
-            setCreatePanOpen(true);
-          }}
-        />
-      )}
+      <PanSearchModal
+        isOpen={showPanModal}
+        onClose={() => setShowPanModal(false)}
+        onSelect={(selectedPan) => {
+          setSelectedPan(selectedPan);
+          setShowIngredientModal(false);
+        }}
+        onCreatePan={(type) => {
+          setShowPanModal(false);
+          setSelectedType(type);
+          setCreatePanOpen(true);
+        }}
+      />
 
       <CreatePanModal
         isOpen={isCreatePanOpen}

@@ -18,7 +18,7 @@ interface PanSearchModalProps {
 
 interface Pan {
   panId: number;
-  panType: string;
+  panType: PanType;
   measurements: string;
   volume: number;
 }

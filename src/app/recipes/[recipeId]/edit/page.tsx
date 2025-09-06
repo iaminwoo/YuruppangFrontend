@@ -13,6 +13,9 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
+import { Pan } from "../page";
+import PanSearchModal, { PanType } from "@/components/recipes/PanSearchModal";
+import CreatePanModal from "@/components/recipes/CreatePanModal";
 
 interface Ingredient {
   ingredientName: string;
@@ -29,6 +32,7 @@ interface RecipeDetail {
   name: string;
   description: string;
   outputQuantity: number;
+  pan: Pan;
   categoryId: number; // 추가된 필드
   categoryName: string; // 추가된 필드
   parts: Part[];
@@ -80,6 +84,11 @@ export default function RecipeEditPage() {
     number | null
   >(null);
 
+  const [selectedPan, setSelectedPan] = useState<Pan>();
+  const [showPanModal, setShowPanModal] = useState(false);
+  const [isCreatePanOpen, setCreatePanOpen] = useState(false);
+  const [selectedType, setSelectedType] = useState<PanType | null>(null);
+
   // 페이지 로드 시: 레시피 디테일과 카테고리 목록 모두 불러오기
   useEffect(() => {
     if (!recipeId) return;
@@ -96,6 +105,7 @@ export default function RecipeEditPage() {
           setName(r.name);
           setDescription(r.description);
           setOutputQuantity(r.outputQuantity);
+          setSelectedPan(r.pan);
           setSelectedCategoryId(r.categoryId.toString()); // 카테고리 ID 세팅
 
           if (r.parts && Array.isArray(r.parts) && r.parts.length > 0) {
@@ -311,6 +321,7 @@ export default function RecipeEditPage() {
       name: name.trim(),
       description: description.trim(),
       outputQuantity: parseInt(String(outputQuantity), 10),
+      panId: selectedPan?.panId,
       categoryId: selectedCategoryId,
       parts: cleanParts,
     };
@@ -447,6 +458,24 @@ export default function RecipeEditPage() {
             onChange={(e) => setOutputQuantity(e.target.value)}
             className="w-24 rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-[#D7B49E]"
           />
+        </div>
+
+        {/* 5. 틀 선택 */}
+        <div>
+          <label className="block font-semibold mb-1 text-[#4E342E]">틀</label>
+          <button
+            type="button"
+            onClick={() => {
+              setShowPanModal(true);
+            }}
+            className={`w-full border border-gray-300 p-1 rounded-md text-left ${
+              selectedPan ? "text-gray-900" : "text-gray-400"
+            }`}
+          >
+            {selectedPan
+              ? `${selectedPan.measurements} = 부피 : ${selectedPan.volume} cm³`
+              : "틀을 선택하세요."}
+          </button>
         </div>
         <hr className="border-[#D7B49E] my-4" />
 
@@ -641,6 +670,27 @@ export default function RecipeEditPage() {
               }}
             />
           )}
+
+        <PanSearchModal
+          isOpen={showPanModal}
+          onClose={() => setShowPanModal(false)}
+          onSelect={(selectedPan) => {
+            setSelectedPan(selectedPan);
+            setShowIngredientModal(false);
+          }}
+          onCreatePan={(type) => {
+            setShowPanModal(false);
+            setSelectedType(type);
+            setCreatePanOpen(true);
+          }}
+        />
+
+        <CreatePanModal
+          isOpen={isCreatePanOpen}
+          initialType={selectedType}
+          onClose={() => setCreatePanOpen(false)}
+          onCreate={(pan) => setSelectedPan(pan)}
+        />
       </main>
     </div>
   );

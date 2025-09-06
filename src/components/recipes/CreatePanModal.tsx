@@ -15,7 +15,7 @@ export interface Pan {
 
 export interface PanResponse {
   panId: number;
-  panType: string;
+  panType: PanType;
   measurements: string;
   volume: number;
 }

@@ -19,10 +19,18 @@ interface Part {
   ingredients: IngredientDetail[];
 }
 
+export interface Pan {
+  panId: number;
+  panType: "ROUND" | "SQUARE" | "CUSTOM";
+  measurements: string;
+  volume: number;
+}
+
 interface RecipeDetail {
   name: string;
   description: string;
   outputQuantity: number;
+  pan: Pan;
   totalPrice: number;
   parts: Part[];
   categoryName: string;
@@ -44,6 +52,12 @@ export default function RecipeDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  const panTypeMap: Record<string, string> = {
+    ROUND: "원형틀",
+    SQUARE: "사각틀",
+    CUSTOM: "기타",
+  };
 
   const options = {
     defaultProtocol: "https",
@@ -211,6 +225,24 @@ export default function RecipeDetailPage() {
             </div>
 
             <div className="h-px bg-gray-300 my-4" />
+
+            {recipe.pan.panId != 0 && (
+              <div>
+                <h3 className="text-xl font-semibold mb-4 text-[#4E342E]">
+                  틀
+                </h3>
+                <div className="flex mb-2 items-center gap-1">
+                  <div className="text-base font-semibold">종류 : </div>
+                  <div>{panTypeMap[recipe.pan.panType]}</div>
+                </div>
+                <div className="text-base font-semibold">
+                  {recipe.pan.measurements}
+                </div>
+                <div>(부피 : {recipe.pan.volume} cm³)</div>
+
+                <div className="h-px bg-gray-300 my-4" />
+              </div>
+            )}
 
             {/* parts 배열 순회 */}
             {recipe.parts.map((part) => (

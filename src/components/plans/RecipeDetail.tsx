@@ -607,7 +607,7 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
                                     setCurrentIngredientIndex(iIdx);
                                     setShowIngredientModal(true);
                                   }}
-                                  className={`flex-1 border-b border-gray-300 p-1 text-left ${
+                                  className={`flex-2 border-b border-gray-300 p-1 text-left ${
                                     ing.ingredientName
                                       ? "text-gray-900"
                                       : "text-gray-400"
@@ -616,13 +616,13 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
                                   {ing.ingredientName || "재료명을 선택하세요"}
                                 </button>
                               ) : (
-                                <div className="flex-1 min-w-0 text-center">
+                                <div className="flex-2 min-w-0 text-center">
                                   {ing.ingredientName}
                                 </div>
                               )}
 
                               {/* 기본 수량 */}
-                              <div className="flex-1 min-w-0 flex items-center justify-center text-gray-600 text-center">
+                              <div className="flex-4 min-w-0 flex items-center justify-center text-gray-600 text-center">
                                 {ing.originalQuantity > 0
                                   ? `${ing.originalQuantity.toLocaleString()} g${
                                       ing.unit !== "g" ? ` (${ing.unit})` : ""
@@ -632,7 +632,7 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
 
                               {/* 필요량 + 단위 (편집시) */}
                               {!plan.isComplete && (
-                                <div className="flex-1 min-w-0 flex items-center gap-1">
+                                <div className="flex-4 min-w-0 flex items-center gap-1">
                                   <div className="relative w-full">
                                     <input
                                       type="number"

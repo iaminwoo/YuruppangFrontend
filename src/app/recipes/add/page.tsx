@@ -15,6 +15,10 @@ import {
 } from "@hello-pangea/dnd";
 import { useRef } from "react";
 import AutoRegisterModal from "@/components/recipes/AutoRegisterModal";
+import PanSearchModal from "@/components/recipes/PanSearchModal";
+import CreatePanModal from "@/components/recipes/CreatePanModal";
+
+export type PanType = "ROUND" | "SQUARE" | "CUSTOM";
 
 interface Ingredient {
   ingredientName: string;
@@ -41,6 +45,13 @@ interface AutoRegisterData {
   parts?: Part[];
 }
 
+interface Pan {
+  panId: number;
+  panType: string;
+  measurements: string;
+  volume: number;
+}
+
 export default function RecipeForm() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
@@ -62,6 +73,11 @@ export default function RecipeForm() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | "">("");
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
+
+  const [selectedPan, setSelectedPan] = useState<Pan>();
+  const [showPanModal, setShowPanModal] = useState(false);
+  const [isCreatePanOpen, setCreatePanOpen] = useState(false);
+  const [selectedType, setSelectedType] = useState<PanType | null>(null);
 
   const [showIngredientModal, setShowIngredientModal] = useState(false);
   const [currentPartIndex, setCurrentPartIndex] = useState<number | null>(null);
@@ -285,6 +301,7 @@ export default function RecipeForm() {
       description: description.trim(),
       outputQuantity: parseInt(String(outputQuantity), 10),
       categoryId: selectedCategoryId,
+      panId: selectedPan?.panId,
       parts: cleanParts,
     };
 
@@ -401,6 +418,24 @@ export default function RecipeForm() {
             className="border border-gray-300 p-2 w-full rounded-md"
             placeholder="생산 수량"
           />
+        </div>
+
+        {/* 5. 틀 선택 */}
+        <div>
+          <label className="block font-semibold mb-1 text-[#4E342E]">틀</label>
+          <button
+            type="button"
+            onClick={() => {
+              setShowPanModal(true);
+            }}
+            className={`w-full border border-gray-300 p-1 rounded-md text-left ${
+              selectedPan ? "text-gray-900" : "text-gray-400"
+            }`}
+          >
+            {selectedPan
+              ? `${selectedPan.measurements} = 부피 : ${selectedPan.volume} cm³`
+              : "틀을 선택하세요."}
+          </button>
         </div>
 
         {/* 파트 추가/삭제 */}
@@ -696,6 +731,27 @@ export default function RecipeForm() {
             }}
           />
         )}
+
+      <PanSearchModal
+        isOpen={showPanModal}
+        onClose={() => setShowPanModal(false)}
+        onSelect={(selectedPan) => {
+          setSelectedPan(selectedPan);
+          setShowIngredientModal(false);
+        }}
+        onCreatePan={(type) => {
+          setShowPanModal(false);
+          setSelectedType(type);
+          setCreatePanOpen(true);
+        }}
+      />
+
+      <CreatePanModal
+        isOpen={isCreatePanOpen}
+        initialType={selectedType}
+        onClose={() => setCreatePanOpen(false)}
+        onCreate={(pan) => setSelectedPan(pan)}
+      />
     </div>
   );
 }

@@ -11,6 +11,11 @@ import {
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { toast } from "sonner";
 import * as PlanTypes from "@/types";
+import { useState } from "react";
+import PanSearchModal, { PanType } from "@/components/recipes/PanSearchModal";
+import CreatePanModal, {
+  PanResponse,
+} from "@/components/recipes/CreatePanModal";
 
 interface RecipeDetailSectionProps {
   plan: PlanTypes.PlanDetail;
@@ -59,6 +64,10 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
     target: "_blank",
     className: "text-blue-800 underline hover:text-blue-400",
   };
+
+  const [showPanModal, setShowPanModal] = useState(false);
+  const [isCreatePanOpen, setCreatePanOpen] = useState(false);
+  const [selectedType, setSelectedType] = useState<PanType | null>(null);
 
   const handleDragEnd = (result: DropResult) => {
     const { source, destination } = result;
@@ -298,6 +307,30 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
     }
   };
 
+  const updatePanOnServer = async (pan: PanResponse) => {
+    try {
+      const res = await fetchWithAuth(
+        `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}/pan`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ panId: pan.panId }),
+        }
+      );
+
+      if (!res.ok) throw new Error(`초기화 실패: ${res.status}`);
+      const json: PlanTypes.ApiResponse<PlanTypes.PlanDetailResponse> =
+        await res.json();
+      if (json.resultCode !== "OK") {
+        throw new Error(json.msg || "초기화 오류");
+      }
+      toast.success("틀이 변경 되었습니다.");
+      fetchPlanDetail(planId);
+    } catch (error) {
+      console.error("서버 반영 실패", error);
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl px-3 pt-3 pb-6 shadow space-y-2 relative">
       {/* RESET / 제외 버튼 영역 */}
@@ -409,6 +442,65 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
         </label>
       )}
 
+      <div className="h-px bg-gray-300 my-4" />
+
+      {/* 틀 변경 */}
+      <div>
+        <label className="font-semibold">틀</label>
+        <div className="flex justify-between items-end">
+          <div>
+            <div>
+              {editingRecipe.pan.panId != 0
+                ? `${editingRecipe.pan.measurements} (${
+                    editingRecipe.pan.panType === "ROUND"
+                      ? "원형틀"
+                      : editingRecipe.pan.panType === "SQUARE"
+                      ? "사각틀"
+                      : "기타"
+                  })`
+                : "틀 없음"}
+            </div>
+            <div>
+              부피 :{" "}
+              {editingRecipe.pan.panId != 0
+                ? `${editingRecipe.pan.volume}cm³`
+                : "-"}
+            </div>
+          </div>
+          {!plan.isComplete && (
+            <Button
+              onClick={() => setShowPanModal(true)}
+              className="ml-3 px-3 py-1 rounded-md bg-[#A97155] text-white"
+            >
+              틀 변경
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <PanSearchModal
+        isOpen={showPanModal}
+        onClose={() => setShowPanModal(false)}
+        onSelect={(selectedPan) => {
+          setShowIngredientModal(false);
+          updatePanOnServer(selectedPan);
+        }}
+        onCreatePan={(type) => {
+          setShowPanModal(false);
+          setSelectedType(type);
+          setCreatePanOpen(true);
+        }}
+      />
+
+      <CreatePanModal
+        isOpen={isCreatePanOpen}
+        initialType={selectedType}
+        onClose={() => setCreatePanOpen(false)}
+        onCreate={(pan) => updatePanOnServer(pan)}
+      />
+
+      <div className="h-px bg-gray-300 my-4" />
+
       {/* 재료 목록 (PART별) */}
       <div className="overflow-visible relative min-h-[400px]">
         <h4 className="font-semibold mb-2">재료 목록</h4>
@@ -515,7 +607,7 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
                                     setCurrentIngredientIndex(iIdx);
                                     setShowIngredientModal(true);
                                   }}
-                                  className={`flex-1 border-b border-gray-300 p-1 text-left ${
+                                  className={`flex-2 border-b border-gray-300 p-1 text-left ${
                                     ing.ingredientName
                                       ? "text-gray-900"
                                       : "text-gray-400"
@@ -524,13 +616,13 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
                                   {ing.ingredientName || "재료명을 선택하세요"}
                                 </button>
                               ) : (
-                                <div className="flex-1 min-w-0 text-center">
+                                <div className="flex-2 min-w-0 text-center">
                                   {ing.ingredientName}
                                 </div>
                               )}
 
                               {/* 기본 수량 */}
-                              <div className="flex-1 min-w-0 flex items-center justify-center text-gray-600 text-center">
+                              <div className="flex-4 min-w-0 flex items-center justify-center text-gray-600 text-center">
                                 {ing.originalQuantity > 0
                                   ? `${ing.originalQuantity.toLocaleString()} g${
                                       ing.unit !== "g" ? ` (${ing.unit})` : ""
@@ -540,7 +632,7 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
 
                               {/* 필요량 + 단위 (편집시) */}
                               {!plan.isComplete && (
-                                <div className="flex-1 min-w-0 flex items-center gap-1">
+                                <div className="flex-4 min-w-0 flex items-center gap-1">
                                   <div className="relative w-full">
                                     <input
                                       type="number"

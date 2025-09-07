@@ -79,7 +79,7 @@ export default function CreatePanModal({
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-      <div className="bg-white rounded-xl p-6 w-96">
+      <div className="bg-white rounded-xl p-6 w-[300px] h-[350px] max-w-full max-h-full">
         <h2 className="text-xl font-semibold mb-4">새 틀 생성</h2>
 
         {/* Pantype 선택 */}
@@ -90,8 +90,8 @@ export default function CreatePanModal({
           {(["ROUND", "SQUARE", "CUSTOM"] as PanType[]).map((type) => (
             <button
               key={type}
-              className={`px-4 py-2 rounded ${
-                panType === type ? "bg-blue-500 text-white" : "bg-gray-200"
+              className={`px-4 py-2 rounded-xl ${
+                panType === type ? "bg-[#A97155] text-white" : "bg-gray-200"
               }`}
               onClick={() => setPanType(type)}
             >
@@ -212,16 +212,13 @@ export default function CreatePanModal({
 
         {/* 버튼 */}
         <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-          >
+          <button onClick={onClose} className="px-4 py-2 rounded bg-gray-300">
             취소
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+            className="px-4 py-2 rounded bg-[#A97155] text-white"
           >
             {loading ? "생성중..." : "생성하기"}
           </button>

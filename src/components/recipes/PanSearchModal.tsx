@@ -79,14 +79,14 @@ export default function PanSearchModal({
       className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
       onClick={handleOverlayClick}
     >
-      <div className="bg-white rounded-lg flex-col p-6 w-full max-w-lg mx-4 shadow-lg relative">
+      <div className="bg-white rounded-lg flex-col p-6 mx-4 shadow-lg relative w-[400px] h-[400px] max-w-full max-h-full">
         <h2 className="text-xl font-semibold mb-4">틀 검색</h2>
 
         {/* 상단: PanType 선택 */}
         <div className="flex-col w-full justify-around mb-4">
           <button
             className={`px-4 py-2 mb-4 mx-1 rounded-xl ${
-              selectedType === null ? "bg-blue-500 text-white" : "bg-gray-200"
+              selectedType === null ? "bg-[#A97155] text-white" : "bg-gray-200"
             }`}
             onClick={() => setSelectedType(null)}
           >
@@ -97,7 +97,9 @@ export default function PanSearchModal({
             <button
               key={type}
               className={`px-4 py-2 mb-4 mx-1 rounded-xl ${
-                selectedType === type ? "bg-blue-500 text-white" : "bg-gray-200"
+                selectedType === type
+                  ? "bg-[#A97155] text-white"
+                  : "bg-gray-200"
               }`}
               onClick={() => setSelectedType(type)}
             >
@@ -110,7 +112,7 @@ export default function PanSearchModal({
           ))}
 
           {/* 틀 목록 */}
-          <div className="max-h-64 overflow-y-auto mb-4">
+          <div className="h-54 overflow-y-auto mb-4 border p-2 rounded">
             {loading ? (
               <p>불러오는 중...</p>
             ) : pans.length === 0 ? (
@@ -128,7 +130,7 @@ export default function PanSearchModal({
                     </p>
                   </div>
                   <button
-                    className="px-2 py-1 bg-green-500 text-white rounded"
+                    className="px-2 py-1 bg-[#C28F73] text-white rounded"
                     onClick={() => {
                       onSelect(pan);
                       onClose();
@@ -144,7 +146,7 @@ export default function PanSearchModal({
           {/* 하단: 새 틀 생성 */}
           <div className="flex justify-end">
             <button
-              className="px-2 py-2 bg-blue-600 text-white rounded"
+              className="px-2 py-2 bg-[#A97155] text-white rounded-xl"
               onClick={() => onCreatePan(selectedType)}
             >
               + 새 틀 생성

@@ -1,3 +1,4 @@
+import { PanResponse } from "../recipes/CreatePanModal";
 
 export interface Ingredient {
   ingredientId: number;
@@ -28,6 +29,7 @@ export interface Recipe {
   totalPrice: number;
   customName: string;
   customDescription: string;
+  pan: PanResponse;
   outputQuantity: number;
   goalQuantity: number | string;
   percent: number;
@@ -80,6 +82,7 @@ export interface ApiRecipeDetail {
   totalPrice: number;
   customRecipeName: string;
   customRecipeDescription: string;
+  pan: PanResponse;
   outputQuantity: number;
   goalQuantity: number | string;
   percent: number;

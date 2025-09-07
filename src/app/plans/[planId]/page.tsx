@@ -108,6 +108,7 @@ export default function PlanDetailPage() {
           totalPrice: r.totalPrice,
           customName: r.customRecipeName,
           customDescription: r.customRecipeDescription,
+          pan: r.pan,
           outputQuantity: r.outputQuantity,
           goalQuantity: r.goalQuantity,
           percent: r.percent,
@@ -216,18 +217,6 @@ export default function PlanDetailPage() {
       toast.error((err as Error).message);
     }
   };
-
-  // ──────────────────────────────────────────────────────────────────────────────
-  // 선택된 레시피 제외(삭제) 핸들러
-  // ──────────────────────────────────────────────────────────────────────────────
-
-  // ──────────────────────────────────────────────────────────────────────────────
-  // 목표 수량 변경 핸들러 (기존)
-  // ──────────────────────────────────────────────────────────────────────────────
-
-  // ──────────────────────────────────────────────────────────────────────────────
-  // 재료 수정 핸들러 (기존)
-  // ──────────────────────────────────────────────────────────────────────────────
 
   const handleIngredientsSubmit = async () => {
     if (!editingRecipe) return;

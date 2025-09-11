@@ -584,6 +584,7 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
                           key={`${pIdx}-${iIdx}`}
                           draggableId={`${pIdx}-${iIdx}`}
                           index={iIdx}
+                          isDragDisabled={plan.isComplete}
                         >
                           {(provided) => (
                             <div
@@ -616,7 +617,7 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
                                   {ing.ingredientName || "재료명을 선택하세요"}
                                 </button>
                               ) : (
-                                <div className="flex-2 min-w-0 text-center">
+                                <div className="flex-3 min-w-0 text-center">
                                   {ing.ingredientName}
                                 </div>
                               )}

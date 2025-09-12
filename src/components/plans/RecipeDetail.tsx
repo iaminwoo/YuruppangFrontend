@@ -37,6 +37,7 @@ interface RecipeDetailSectionProps {
   setCalculatedNewGoal: Dispatch<SetStateAction<number>>;
   setPartPercents: Dispatch<SetStateAction<number[]>>;
   setShowScaleModal: Dispatch<SetStateAction<boolean>>;
+  onLastRecipeRemove: () => void;
 }
 
 const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
@@ -58,6 +59,7 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
   setCalculatedNewGoal,
   setPartPercents,
   setShowScaleModal,
+  onLastRecipeRemove,
 }) => {
   const options = {
     defaultProtocol: "https",
@@ -111,6 +113,18 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
     if (!ok) return;
 
     try {
+      // 마지막 레시피인지 확인
+      if (plan.recipeDetails.length === 1) {
+        const confirmPlanDelete = confirm(
+          "마지막 레시피입니다. 베이킹 플랜 전체를 삭제하시겠습니까?"
+        );
+        if (!confirmPlanDelete) return;
+
+        // 부모의 플랜 삭제 함수 호출
+        onLastRecipeRemove();
+        return;
+      }
+
       const res = await fetchWithAuth(
         `${apiUrl}/api/plans/${planId}/recipes/${editingRecipe.recipeId}`,
         { method: "DELETE" }

@@ -529,6 +529,7 @@ export default function PlanDetailPage() {
                 setCalculatedNewGoal={setCalculatedNewGoal}
                 setPartPercents={setPartPercents}
                 setShowScaleModal={setShowScaleModal}
+                onLastRecipeRemove={handleDeletePlan}
               />
             </section>
 

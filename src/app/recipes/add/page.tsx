@@ -272,6 +272,19 @@ export default function RecipeForm() {
       adjustedParts[0].partName = "기본";
     }
 
+    // 재료량 0 체크
+    for (const part of adjustedParts) {
+      for (const ing of part.ingredients) {
+        const qty = parseFloat(String(ing.quantity));
+        if (qty === 0) {
+          alert(
+            `재료 "${ing.ingredientName}" 의 수량이 0입니다. 0보다 큰 값을 입력해주세요.`
+          );
+          return;
+        }
+      }
+    }
+
     const cleanParts = adjustedParts
       .filter((part) => part.ingredients.length > 0)
       .map((part) => ({

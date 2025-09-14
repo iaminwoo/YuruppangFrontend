@@ -111,7 +111,7 @@ export default function CreatePanModal({
         {panType === "ROUND" && (
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2">
-              <label className="font-semibold text-xs text-[#4E342E]">
+              <label className="font-semibold text-xs text-[#4E342E] shrink-0 w-8">
                 반지름
               </label>
               <input
@@ -121,12 +121,12 @@ export default function CreatePanModal({
                 onChange={(e) =>
                   setRadius(e.target.value ? Number(e.target.value) : undefined)
                 }
-                className="border rounded px-2 py-1 flex-grow"
+                className="border rounded px-2 py-1 flex-grow min-w-0"
               />
             </div>
 
             <div className="flex items-center gap-2">
-              <label className="font-semibold text-xs text-[#4E342E]">
+              <label className="font-semibold text-xs text-[#4E342E] shrink-0 w-8">
                 높이
               </label>
               <input
@@ -136,7 +136,7 @@ export default function CreatePanModal({
                 onChange={(e) =>
                   setHeight(e.target.value ? Number(e.target.value) : undefined)
                 }
-                className="border rounded px-2 py-1 flex-grow"
+                className="border rounded px-2 py-1 flex-grow min-w-0"
               />
             </div>
           </div>
@@ -145,7 +145,7 @@ export default function CreatePanModal({
         {panType === "SQUARE" && (
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2">
-              <label className="font-semibold text-xs text-[#4E342E]">
+              <label className="font-semibold text-xs text-[#4E342E] shrink-0 w-8">
                 가로
               </label>
               <input
@@ -155,12 +155,12 @@ export default function CreatePanModal({
                 onChange={(e) =>
                   setWidth(e.target.value ? Number(e.target.value) : undefined)
                 }
-                className="border rounded px-2 py-1 flex-grow"
+                className="border rounded px-2 py-1 flex-grow min-w-0"
               />
             </div>
 
             <div className="flex items-center gap-2">
-              <label className="font-semibold text-xs text-[#4E342E]">
+              <label className="font-semibold text-xs text-[#4E342E] shrink-0 w-8">
                 세로
               </label>
               <input
@@ -170,12 +170,12 @@ export default function CreatePanModal({
                 onChange={(e) =>
                   setLength(e.target.value ? Number(e.target.value) : undefined)
                 }
-                className="border rounded px-2 py-1 flex-grow"
+                className="border rounded px-2 py-1 flex-grow min-w-0"
               />
             </div>
 
             <div className="flex items-center gap-2">
-              <label className="font-semibold text-xs text-[#4E342E]">
+              <label className="font-semibold text-xs text-[#4E342E] shrink-0 w-8">
                 높이
               </label>
               <input
@@ -185,7 +185,7 @@ export default function CreatePanModal({
                 onChange={(e) =>
                   setHeight(e.target.value ? Number(e.target.value) : undefined)
                 }
-                className="border rounded px-2 py-1 flex-grow"
+                className="border rounded px-2 py-1 flex-grow min-w-0"
               />
             </div>
           </div>
@@ -194,7 +194,7 @@ export default function CreatePanModal({
         {panType === "CUSTOM" && (
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2">
-              <label className="font-semibold text-xs text-[#4E342E]">
+              <label className="font-semibold text-xs text-[#4E342E] shrink-0 w-8">
                 부피
               </label>
               <input
@@ -204,7 +204,7 @@ export default function CreatePanModal({
                 onChange={(e) =>
                   setVolume(e.target.value ? Number(e.target.value) : undefined)
                 }
-                className="border rounded px-2 py-1 flex-grow"
+                className="border rounded px-2 py-1 flex-grow min-w-0"
               />
             </div>
           </div>

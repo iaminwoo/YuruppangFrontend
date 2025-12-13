@@ -526,10 +526,9 @@ export default function RecipeForm() {
                                     }}
                                     className={`flex-grow border p-1 rounded-md text-left transition-colors duration-150
                                       ${
-                                        ing.stock === null ||
-                                        ing.stock === undefined
+                                        ing.stock === 0
                                           ? "bg-red-100 border-red-400"
-                                          : "bg-white border-gray-300"
+                                          : "border-gray-300"
                                       }
                                       ${
                                         ing.ingredientName

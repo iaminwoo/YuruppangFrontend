@@ -524,11 +524,18 @@ export default function RecipeForm() {
                                       setCurrentIngredientIndex(i);
                                       setShowIngredientModal(true);
                                     }}
-                                    className={`flex-grow border border-gray-300 p-1 rounded-md text-left ${
-                                      ing.ingredientName
-                                        ? "text-gray-900"
-                                        : "text-gray-400"
-                                    }`}
+                                    className={`flex-grow border p-1 rounded-md text-left transition-colors duration-150
+                                      ${
+                                        ing.stock === null ||
+                                        ing.stock === undefined
+                                          ? "bg-red-100 border-red-400"
+                                          : "bg-white border-gray-300"
+                                      }
+                                      ${
+                                        ing.ingredientName
+                                          ? "text-gray-900"
+                                          : "text-gray-400"
+                                      }`}
                                   >
                                     {ing.ingredientName ||
                                       "재료명을 선택하세요"}

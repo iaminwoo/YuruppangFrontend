@@ -492,27 +492,6 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
         </div>
       </div>
 
-      <PanSearchModal
-        isOpen={showPanModal}
-        onClose={() => setShowPanModal(false)}
-        onSelect={(selectedPan) => {
-          setShowIngredientModal(false);
-          updatePanOnServer(selectedPan);
-        }}
-        onCreatePan={(type) => {
-          setShowPanModal(false);
-          setSelectedType(type);
-          setCreatePanOpen(true);
-        }}
-      />
-
-      <CreatePanModal
-        isOpen={isCreatePanOpen}
-        initialType={selectedType}
-        onClose={() => setCreatePanOpen(false)}
-        onCreate={(pan) => updatePanOnServer(pan)}
-      />
-
       <div className="h-px bg-gray-300 my-4" />
 
       {/* 재료 목록 (PART별) */}
@@ -754,6 +733,27 @@ const RecipeDetail: React.FC<RecipeDetailSectionProps> = ({
           </div>
         )}
       </div>
+
+      <PanSearchModal
+        isOpen={showPanModal}
+        onClose={() => setShowPanModal(false)}
+        onSelect={(selectedPan) => {
+          setShowIngredientModal(false);
+          updatePanOnServer(selectedPan);
+        }}
+        onCreatePan={(type) => {
+          setShowPanModal(false);
+          setSelectedType(type);
+          setCreatePanOpen(true);
+        }}
+      />
+
+      <CreatePanModal
+        isOpen={isCreatePanOpen}
+        initialType={selectedType}
+        onClose={() => setCreatePanOpen(false)}
+        onCreate={(pan) => updatePanOnServer(pan)}
+      />
     </div>
   );
 };
